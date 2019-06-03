@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/jquery.min.css"></script>
+    <script src="js/popper.min.js"></script>
+    <title>Student's parent Data</title>
+</head>
+<body>
+    <div class="container">
+            <h1>Student's parent Information page</h1>
+
+            <form action="/parent/insertParent" method="POST" class="form-row">
+                
+                <div class="form-group col-md-6">
+                    <label for="sname">Select Name</label>
+                    <select name="sname" class="form-control">
+                        <% studentParent.forEach((item) => { %>
+                            <option value="<% =item.id %>"><%= item.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="fname">Please enter student's father name </label>
+                    <input type="text" fname="name" class="form-control" placeholder="Father name">
+                </div>
+    
+                <div class="form-group col-md-6">
+                    <label for="mname">Please enter student's mother name </label>
+                    <input type="text" name="mname" class="form-control" placeholder="Mother name">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="fmobile">Please enter mobile number of student's father </label>
+                    <input type="number" name="fmobile" class="form-control" placeholder="Student father's Mobile number">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="mmobile">Please enter mobile number of student's mother</label>
+                    <input type="number" name="mmobile" class="form-control" placeholder="student mother's mobile number">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="address">Please enter address of student's parent </label>
+                    <input type="text" name="address" class="form-control" placeholder="Joining Date">
+                </div>
+
+                <div class="form-group">
+                    <label for="note">Please enter notes, if any(Optional) </label>
+                    <input type="text" name="note" class="form-control" placeholder="Notes">
+                </div>
+    
+                <div class="form-group">
+                    <input type="submit" value="Add Parent" class="btn btn-primary">
+                </div>
+            </form>
+    </div>
+</body>
+</html>
