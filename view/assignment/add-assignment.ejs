@@ -15,38 +15,81 @@
 <body>
     <div class="container">
             <h1>Login Page</h1>
-            <form action="/addData" method="POST">
-                <div class="form-group">
-                    <label for="studentId">Please enter student name </label>
-                    <input type="text" name="studentId" class="form-control" placeholder="Student">
-                </div>
-    
-                <div class="form-group">
-                    <label for="assignmentSubjectId">Please enter subject assignment </label>
-                    <input type="text" name="assignmentSubjectId" class="form-control" placeholder="subject assignment">
-                </div>
-
-                <div class="form-group">
-                    <label for="assignmentTeacherId">Please enter assignment teacher </label>
-                    <input type="text" name="assignmentTeacherId" class="form-control" placeholder="Mobile number">
-                </div>
-
-                <div class="form-group">
-                    <select name="done" id="done">
-                        <option value="">Select One</option>
-                        <option value="yes">Yes</option>
-                        <option value="no">No</option>
+            <form action="/addAssignment" method="POST" class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="sname">Select Student</label>
+                    <select name="sname" id="" class="form-control">
+                        <option value="defaule">Select Student</option>
+                        <% studentResult.forEach((item) => { %>
+                        <option value="<%= item.id %>"><%= item.name%></option>
+                        <% }) %>
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="fname">Please enter notes, if any </label>
-                    <input type="textarea" name="notes" class="form-control" placeholder="Address">
+                <div class="form-group col-md-4">
+                    <label for="asSubject">Select Subject of Assignment</label>
+                    <select name="asSubject" id="" class="form-control">
+                        <option value="defaule">Select Subject</option>
+                        <% subjectResult.forEach((item) => { %>
+                        <option value="<%= item.id %>"><%= item.subjectName %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label for="asTeacher">Select Teacher of Assignment</label>
+                    <select name="asTeacher" id="" class="form-control">
+                        <option value="defaule">Select Teacher</option>
+                        <% teacherResult.forEach((item) => { %>
+                        <option value="<%= item.id %>"><%= item.fullName %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label for="completed">Number of completed assignments</label>
+                    <select name="completed" id="" class="form-control">
+                        <option value="defaule">Select One</option>
+                        <option value="">0</option>
+                        <option value="">1</option>
+                        <option value="">2</option>
+                        <option value="">3</option>
+                        <option value="">4</option>
+                        <option value="">5</option>
+                        <option value="">6</option>
+                        <option value="">7</option>
+                        <option value="">8</option>
+                        <option value="">9</option>
+                        <option value="">10</option>
+                    </select>
+                </div>
+                
+                <div class="form-group col-md-4">
+                    <label for="incompleted">Number of incompleted assignments</label>
+                    <select name="incomplete" id="" class="form-control">
+                        <option value="defaule">Select One</option>
+                        <option value="">0</option>
+                        <option value="">1</option>
+                        <option value="">2</option>
+                        <option value="">3</option>
+                        <option value="">4</option>
+                        <option value="">5</option>
+                        <option value="">6</option>
+                        <option value="">7</option>
+                        <option value="">8</option>
+                        <option value="">9</option>
+                        <option value="">10</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label for="notes">Please enter notes, if any </label>
+                    <input type="text" name="notes" class="form-control" placeholder="Any extra notes?!">
                 </div>
     
                 <div class="form-group">
-                    <input type="submit" value="Add Staff" class="btn btn-primary">
-                    <a href="/list" class="btn btn-primary">List Staff</a>
+                    <input type="submit" value="Add Assignment" class="btn btn-primary">
+                    <a href="/list" class="btn btn-primary">List Assignment</a>
                 </div>
             </form>
     </div>

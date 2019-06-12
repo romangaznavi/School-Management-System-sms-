@@ -13,22 +13,36 @@ app.set('views', __dirname + '/view');
 app.set("view engine", "ejs");
 app.set('/views', '/view');
 
+// ====================== Student Data ========================//
 // Student List
 app.get('/studentList', function(req, res, next) {
-    con.query("SELECT * FROM student", (err, value) => {
-        if(err){
-            res.send(err);
-        }
-            res.render("student-list", {dataList: value});
-    })
+    con.query(`SELECT 
+                    s.id,
+                    s.name, 
+                    c.className,
+                    s.gender, 
+                    s.dob,
+                    p.fatherName,
+                    p.motherName
+            FROM student AS s
+            LEFT JOIN class AS c ON c.id = s.classId
+            LEFT JOIN parent AS pp ON pp.id=s.fatherName
+            LEFT JOIN parent AS p ON p.id=s.MotherName`, (err, result) => {
+                if(err){
+                    res.send(err);
+                }
+                    res.render("student/student-list", {studentList: result});
+        });
 });
+
 // Student add
 app.get('/add', (req, res) => {
     res.render("student/add-student");
 });
+
 // Student Post
 app.post('/addData', (req, res) => {
-    con.query("INSERT INTO student(name, class, gender, dob, fatherName, motherName) VALUES('"+req.body.name+"', '"+req.body.class+"', '"+req.body.gender+"', '"+req.body.dob+"', '"+req.body.fname+"', '"+req.body.mname+"')", function(err, result){
+    con.query("INSERT INTO student(name, class, gender, dob, fatherName, motherName) VALUES('"+req.body.sname+"', '"+req.body.class+"', '"+req.body.gender+"', '"+req.body.dob+"', '"+req.body.fname+"', '"+req.body.mname+"')", function(err, result){
         if(err){
             res.send(err);
         }
@@ -36,40 +50,182 @@ app.post('/addData', (req, res) => {
     });
 });
 
-// ---------------- Parent Data --------------------
+// ======================== Parent Data =========================//
 
 app.get('/parentList', (req, res) => {
-    con.query("SELECT * FROM parent", function(err, result) {
-        if(err){
+    con.query(`SELECT 
+                    p.id,
+                    s.name,
+                    p.fatherName,
+                    p.motherName,
+                    p.fatherMobile,
+                    p.motherMobile,
+                    p.address,
+                    p.note
+                FROM parent AS p
+                LEFT JOIN student AS s ON s.id=p.studentName`, function(err, data) {
+            if(err){
             res.send(err);
         }
-            res.render('parent/list-parent', {parentData: result});
+            res.render('parent/list-parent', {parentData: data});
     });
 });
 
 app.get('/addParent', (req, res) => {
-    res.render('parent/add-parent');
-});
-
-app.get('/getStud', (req, res) => {
-    con.query("SELECT * FROM student", (err, result) => {
+    con.query("SELECT * FROM student", (err, value) => {
         if(err){
             res.send(err);
         }
-            res.render("/parent//add-parent", {studentParent: result});
+            res.render("parent/add-parent", {studentParent: value});
     });
 });
 
 app.post('/insertParent', (req, res, next) => {
-    con.query("INSERT INTO parent (studentName, fatherName, motherName, fatherMobile, motherMobile, address, notes) VALUES('"+req.body.sname+"','"+req.body.fname+"', '"+req.body.mname+"', '"+req.body.fmobile+"', '"+req.body.mmobile+"', '"+req.body.address+"', '"+req.body.note+"')", (err, result) => {
+    con.query("INSERT INTO parent (studentName, fatherName, motherName, fatherMobile, motherMobile, address, note) VALUES('"+req.body.sname+"','"+req.body.fname+"', '"+req.body.mname+"', '"+req.body.fmobile+"', '"+req.body.mmobile+"', '"+req.body.address+"', '"+req.body.note+"')", (err, result) => {
         if(err)
         {
             res.send(err);
         }
-            res.redirect('parent/parentList');
+            res.send("Successfull!");
     });
 });
 
+// ====================== Teacher Data ==========================//
+
+app.get('/addClass', function(req, res) {
+    con.query("SELECT * FROM class", (err, data) => {
+        if(err){
+            res.send(err);
+        }
+            res.render("teacher/teacher-add", {classData: data});
+    });
+});
+
+app.post('/addTeacherData', (req, res, next) => {
+    con.query("INSERT INTO teacher (fullName, classId, dob, gender, joiningDate) VALUES('"+req.body.fname+"', '"+req.body.classId+"', '"+req.body.dob+"', '"+req.body.gender+"', '"+req.body.jdate+"')", (err, result) => {
+        if(err)
+        {
+            res.send(err);
+        }
+            res.redirect("Teacher Added Successfully");
+    });
+});
+
+// ========================= Subject ============================//
+// ADD SUBJECT
+app.get('/addSubject', function(req, res) {
+    con.query("SELECT * FROM teacher", (err, data) => {
+        if(err){
+            res.send(err);
+        }
+            res.render("subject/add-subject", { sData: data });
+    });
+});
+
+app.post('/insertSubject', (req, res, next) => {
+    con.query("INSERT INTO subject (subjectName, teacherId, subjectTeachingDay, startTime, endTime) VALUES('"+req.body.sname+"','"+req.body.teacherId+"', '"+req.body.subjectTeachingDay+"', '"+req.body.stime+"', '"+req.body.etime+"')", (err, result) => {
+        if(err)
+        {
+            res.send(err);
+        }
+            res.redirect("Teacher Added Successfully");
+    });
+});
+
+// ======================== Assignment ==========================//
+
+// ADD ASSIGNMENT
+app.get('/asAdd', (req, res) => {
+    con.query("SELECT * FROM student", (err, result) => {
+        if(err){
+            res.send(err);
+        }
+        con.query("SELECT * FROM subject", (err, result1) => {
+            if(err){
+                res.send(err);
+            }
+            con.query("SELECT * FROM teacher", (err, result3) => {
+                if(err){
+                    res.send(err);
+                }
+                    res.render("assignment/add-assignment", { studentResult: result, subjectResult: result1, teacherResult: result3 });
+            });
+        });
+    });
+});
+
+// ADD ASSIGNMENT
+app.post('/addAssignment', (req, res) => {
+    con.query("INSERT INTO assignment (studentId, assignmentSubject, assignmentTeacher, completed, incomplete, notes) VALUES('"+req.body.sname+"', '"+req.body.asSubject+"', '"+req.body.asTeacher+"', '"+req.body.completed+"', '"+req.body.incomplete+"', '"+req.body.notes+"')", (err, data) => {
+        if(err){
+            res.send(err);
+        }
+            res.send("Data added");
+    });
+});
+
+// LIST ASSIGNMENT
+
+app.get('/asList', (req, res) => {
+    con.query(`SELECT 
+                s.name,
+                sub.subjectName,
+                t.fullName,
+                a.completed,
+                a.incomplete,
+                a.notes
+            FROM assignment AS a
+            LEFT JOIN student AS s ON s.id=a.studentId
+            LEFT JOIN subject AS sub ON sub.id=a.assignmentSubject
+            LEFT JOIN teacher AS t ON t.id=a.assignmentTeacher`, function(err, result){
+                if(err){
+                    res.send(err);
+                }
+                    res.render("assignment/list-assignment", {assignData: result});
+        });
+});
+
+// =========================== CLASS ===========================
+
+app.get('/aaa', (req, res) => {  
+    con.query("SELECT * FROM teacher", (err, teacherr) => {
+        if(err){
+            res.send(err);
+        }
+        con.query("SELECT * FROM subject", (err, subjectt) => {
+            if(err){
+                res.send(err);
+            }
+                res.render('class/add-class', {teacherData: teacherr, subjectData: subjectt });
+        });
+    });
+});
+
+// ADD CLASS
+app.post('/addClass', (req, res) => {
+    con.query("INSERT INTO class (className, teacherId, subjectId) VALUES('"+req.body.classNumber+"', '"+req.body.teach+"', '"+req.body.sub+"')", (err, data) => {
+        if(err){
+            res.send(err);
+        }
+            res.send("Data added");
+    });
+});
+
+// =========================== STAFF ===========================
+
+app.get('/staffAdd', (req, res) => {  
+    res.render("staff/add-staff");
+});
+
+// ADD CLASS
+app.post('/insertStaff', (req, res) => {
+    con.query("INSERT INTO staff (fullName, designation, mobile, address, joiningDate, salary) VALUES ('"+req.body.name+"', '"+req.body.designation+"', '"+req.body.mobile+"', '"+req.body.address+"', '"+req.body.jdate+"', '"+req.body.salary+"')", (err, data) => {
+        if(err){
+            res.send(err);
+        }
+            res.send("Data added");
+    });
+});
 
 app.listen(port, (req, res) => {
     console.log("Your application is running on port", port);

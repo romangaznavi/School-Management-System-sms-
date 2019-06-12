@@ -10,38 +10,38 @@
     <script src="js/bootstrap.js"></script>
     <script src="js/jquery.min.css"></script>
     <script src="js/popper.min.js"></script>
-    <title>Document</title>
+    <title>Staff Registration</title>
 </head>
 <body>
     <div class="container">
-            <h1>Login Page</h1>
-            <form action="/addData" method="POST">
-                <div class="form-group">
+            <h1>Staff Registration Page</h1>
+            <form action="/insertStaff" method="POST" class="form-row">
+                <div class="form-group col-md-4">
                     <label for="name">Please enter your name </label>
-                    <input type="text" name="name" class="form-control" placeholder="Name">
+                    <input type="text" name="name" class="form-control" placeholder="Full Name">
                 </div>
     
-                <div class="form-group">
+                <div class="form-group col-md-4">
                     <label for="class">Please enter designation </label>
                     <input type="text" name="designation" class="form-control" placeholder="designation">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group col-md-4">
                     <label for="mobile">Please enter mobile number </label>
                     <input type="number" name="mobile" class="form-control" placeholder="Mobile number">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group col-md-4">
                     <label for="fname">Please enter address </label>
                     <input type="text" name="address" class="form-control" placeholder="Address">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group col-md-4">
                     <label for="jdate">Please enter joining date </label>
                     <input type="text" name="jdate" class="form-control" placeholder="Joining Date">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group col-md-4">
                     <label for="jdate">Please enter salary </label>
                     <input type="text" name="salary" class="form-control" placeholder="Salary">
                 </div>

@@ -15,24 +15,34 @@
 <body>
     <div class="container">
             <h1>Add Class</h1>
-            <form action="/addData" method="POST">
-                <div class="form-group">
+            <form action="/addClass" method="POST" class="form-row">
+                <div class="form-group col-md-4">
                     <label for="classNumber">Please enter class number</label>
                     <input type="text" name="classNumber" class="form-control" placeholder="Class Number i.e First, second...">
                 </div>
 
-                <div class="form-group">
-                    <label for="subject">Please enter your subject </label>
-                    <input type="text" name="subject" class="form-control" placeholder="Subject" value="">
+                <div class="form-group col-md-4">
+                    <label for="teach">Select Teacher</label>
+                    <select name="teach" id="" class="form-control">
+                        <option value="default">Select Teacher</option>
+                        <%teacherData.forEach((item) => { %>
+                        <option value="<%=item.id%>"><%=item.fullName%></option>
+                        <% }) %>
+                    </select>
                 </div>
-    
-                <div class="form-group">
-                    <label for="teacher">Please enter teacher's name </label>
-                    <input type="text" name="teacher" class="form-control" placeholder="teacher" value="">
+
+                <div class="form-group col-md-4">
+                    <label for="sub">Select Subject</label>
+                    <select name="sub" id="" class="form-control">
+                        <option value="default">Select Subject</option>
+                        <%subjectData.forEach((item) => { %>
+                        <option value="<%=item.id%>"><%= item.subjectName %></option>
+                        <% }) %>
+                    </select>
                 </div>
 
                 <div class="form-group">
-                    <input type="submit" value="Add Student" class="btn btn-primary">
+                    <input type="submit" value="Add Class" class="btn btn-primary">
                 </div>
     
             </form>

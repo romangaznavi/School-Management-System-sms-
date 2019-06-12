@@ -14,22 +14,21 @@
 </head>
 <body>
     <div class="container">
-            <h1>Student's parent Information page</h1>
+            <h1>Student's parent Registration page</h1>
 
-            <form action="/parent/insertParent" method="POST" class="form-row">
-                
+            <form action="insertParent" method="POST" class="form-row">
                 <div class="form-group col-md-6">
                     <label for="sname">Select Name</label>
                     <select name="sname" class="form-control">
                         <% studentParent.forEach((item) => { %>
-                            <option value="<% =item.id %>"><%= item.name %></option>
-                        <% }) %>
+                            <option value="<%=item.id%>"> <%=item.name%> </option>
+                        <% }); %>
                     </select>
                 </div>
 
                 <div class="form-group col-md-6">
                     <label for="fname">Please enter student's father name </label>
-                    <input type="text" fname="name" class="form-control" placeholder="Father name">
+                    <input type="text" name="fname" class="form-control" placeholder="Father name">
                 </div>
     
                 <div class="form-group col-md-6">
