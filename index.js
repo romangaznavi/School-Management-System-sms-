@@ -15,7 +15,7 @@ app.set('/views', '/view');
 
 // ====================== Student Data ========================//
 // Student List
-app.get('/studentList', function(req, res, next) {
+app.get('/', function(req, res, next) {
     con.query(`SELECT 
                     s.id,
                     s.name, 
@@ -63,7 +63,7 @@ app.get('/editS/:id', (req, res) => {
             FROM student AS s
             LEFT JOIN class AS c ON c.id=s.classId
             LEFT JOIN parent AS p ON p.id=s.fatherName
-            LEFT JOIN parent AS pp ON p.id=s.motherName
+            LEFT JOIN parent AS pp ON pp.id=s.motherName
             WHERE s.id = ? `, req.params.id, (err, result) => {
             if(err){
                 res.send(err);
@@ -73,8 +73,22 @@ app.get('/editS/:id', (req, res) => {
 });
 
 // Update POST
-app.post('/editS/:id', (req, res) => {
+app.post('/editStudent/:id', (req, res) => {
     
+    con.query(`UPDATE student
+                SET
+                    name=           '${req.body.name}',
+                    classId=        '${req.body.className}',
+                    gender=         '${req.body.gender}',
+                    dob=            '${req.body.dob}',
+                    fatherName=     '${req.body.fatherName}',
+                    motherName=     '${req.body.motherName}'
+                WHERE id =          '${req.params.id}'`, (err, result) => {
+                    if(err){
+                        res.send(err);
+                    }
+                        res.render("student/student-list");
+                })
 });
 
 
@@ -313,6 +327,34 @@ app.get('/stafflist', (req, res) => {
         }
             res.render("staff/list-staff", {staffData: result});
     });
+});
+
+//  Update
+app.get('/editStaff/:id', (req, res) => {
+    con.query("SELECT * FROM staff WHERE id = ?", req.params.id, (err, result) => {
+        if(err){
+            res.send(err);
+        }
+            res.render("staff/edit-staff", {staffEdit: result});
+    });
+});
+
+// Update POST
+app.post('/updateStaff', (req, res) => {
+    con.query(`UPDATE staff
+                SET
+                fullName= '${req.body.fname}',
+                designation= '${req.body.designation}',
+                mobile= '${mobile}',
+                address= '${address}',
+                joiningDate= '${jdate}',
+                salary= '${salary}'
+                WHERE id= '${req.params.id}'`, function(err, result){
+                    if(err){
+                        res.send(err);
+                    }
+                        res.send("staff/list-staff");
+                });
 });
 
 app.listen(port, (req, res) => {
