@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script src="/js/jquery.min.css"></script>
+    <script src="/js/popper.min.js"></script>   
+    <title>Staff Update Page</title>
+</head>
+<body>
+    <div class="container">
+    <h1>Edit Student Here</h1>
+    <%staffEdit.forEach((item) => { %>
+    <form action="/updateStaff/<%=item.id%>" method="POST" class="form-row">
+
+        <div class="form-group col-md-4">
+            <label for="">Full Name</label>
+            <input type="text" name="fname" value="<%=item.fullName%>" class="form-control">
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="">Designation</label>
+            <input type="text" name="designation" value="<%=item.designation%>" class="form-control">
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="">Mobile</label>
+            <input type="text" name="mobile" value="<%=item.mobile%>" class="form-control">
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="">Address</label>
+            <input type="text" name="address" value="<%=item.address%>" class="form-control">
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="">Joining Date</label>
+            <input type="text" name="jdate" value="<%=item.joiningDate%>" class="form-control">
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="">Salary</label>
+            <input type="text" name="salary" value="<%=item.salary%>" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <input type="submit" name="submit" value="Update Record" class="btn btn-primary">
+        </div>
+
+    </form>   
+    <% }); %>     
+    </div>
+</body>
+</html>
