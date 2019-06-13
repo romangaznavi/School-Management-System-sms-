@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+
+    <title>List Staff</title>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center;">List of Staff</h1>
+        <!-- <a href="/add" class="btn btn-primary">Add Student</a> -->
+        <table class="table table-striped table-bordered table-responsive">
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th> Designation</th>
+                    <th>Mobile</th>
+                    <th>Address</th>
+                    <th>Joining Date</th>
+                    <th>Salary</th>
+                    <th colspan="3">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <% staffData.forEach((item) => { %>
+                <tr>
+                    <!-- This did not come from Parent table, the data came from their respctive table. I dont know if it is right or wrong -->
+                    <td><%=item.fullName%></td>
+                    <td><%=item.designation%></td>
+                    <td><%=item.mobile%></td>
+                    <td><%=item.address%></td>
+                    <td><%=item.joiningDate%></td>
+                    <td><%=item.salary%></td>
+                    <td><a href="/edit/:id">Edit</a></td>
+                    <td><a href="/view/:id">View</a></td>
+                    <td><a href="/delete/:id">Delete</a></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </div>
+        
+    </div>
+</body>
+</html>

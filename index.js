@@ -50,6 +50,34 @@ app.post('/addData', (req, res) => {
     });
 });
 
+// Update
+app.get('/editS/:id', (req, res) => {
+    con.query(`SELECT 
+                s.id,
+                s.name,
+                c.className,
+                s.gender,
+                s.dob,
+                p.fatherName,
+                pp.motherName
+            FROM student AS s
+            LEFT JOIN class AS c ON c.id=s.classId
+            LEFT JOIN parent AS p ON p.id=s.fatherName
+            LEFT JOIN parent AS pp ON p.id=s.motherName
+            WHERE s.id = ? `, req.params.id, (err, result) => {
+            if(err){
+                res.send(err);
+            }
+                res.render("student/edit-student", {studentData: result});
+        });
+});
+
+// Update POST
+app.post('/editS/:id', (req, res) => {
+    
+});
+
+
 // ======================== Parent Data =========================//
 
 app.get('/parentList', (req, res) => {
@@ -111,6 +139,23 @@ app.post('/addTeacherData', (req, res, next) => {
     });
 });
 
+// LIST TEACHER
+app.get('/teacherList', (req, res) => {
+    con.query(`SELECT 
+                t.fullName,
+                c.className,
+                t.dob,
+                t.gender,
+                t.joiningDate
+                FROM teacher AS t
+                LEFT JOIN class AS c ON c.id = t.classId`, (err, result) => {
+                    if(err){
+                        res.send(err);
+                    }
+                        res.render("teacher/teacher-list", {teacherListData: result});
+                });
+});
+
 // ========================= Subject ============================//
 // ADD SUBJECT
 app.get('/addSubject', function(req, res) {
@@ -130,6 +175,23 @@ app.post('/insertSubject', (req, res, next) => {
         }
             res.redirect("Teacher Added Successfully");
     });
+});
+
+// LIST SUBJECT
+app.get('/subjectList', (req, res) => {
+    con.query(`SELECT 
+                s.subjectName,
+                t.fullName,
+                s.subjectTeachingDay,
+                s.startTime,
+                s.endTime
+            FROM subject AS s
+            LEFT JOIN teacher AS t ON t.id = s.teacherId`, (err, result) => {
+                if(err){
+                    res.send(err);
+                }
+                    res.render("subject/list-subject", {subListData: result});
+            });
 });
 
 // ======================== Assignment ==========================//
@@ -211,6 +273,22 @@ app.post('/addClass', (req, res) => {
     });
 });
 
+// LIST CLASS
+app.get('/listClas', (req, res) => {
+    con.query(`SELECT 
+                    c.className,
+                    t.fullName,
+                    s.subjectName
+                FROM class AS c
+                LEFT JOIN teacher AS t ON t.id = c.teacherId
+                LEFT JOIN subject AS s ON s.id = c.subjectId`, (err, result) => {
+                    if(err){
+                        res.send(err);
+                    }
+                        res.render("class/list-class", {classResult: result});
+                })
+})
+
 // =========================== STAFF ===========================
 
 app.get('/staffAdd', (req, res) => {  
@@ -224,6 +302,16 @@ app.post('/insertStaff', (req, res) => {
             res.send(err);
         }
             res.send("Data added");
+    });
+});
+
+// LIST STAFF
+app.get('/stafflist', (req, res) => {
+    con.query("SELECT * FROM staff", (err, result) => {
+        if(err){
+            res.send(err);
+        }
+            res.render("staff/list-staff", {staffData: result});
     });
 });
 

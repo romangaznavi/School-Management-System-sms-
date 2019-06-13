@@ -35,13 +35,13 @@
                 <% studentList.forEach((item) => { %>
                 <tr>
                     <td><%=item.name%></td>
-                    <td><%=item.classId%></td>
+                    <td><%=item.className%></td>
                     <td><%=item.gender%></td>
                     <td><%=item.dob%></td>
                     <td><%=item.fatherName%></td>
                     <td><%=item.motherName%></td>
-                    <td><a href="/edit/:id">Edit</a></td>
-                    <td><a href="/view/:id">View</a></td>
+                    <td><a href="/editS/<%=item.id%>">Edit</a></td>
+                    <td><a href="/view/<%=item.id%>">View</a></td>
                     <td><a href="/delete/:id">Delete</a></td>
                 </tr>
                 <% }) %>
