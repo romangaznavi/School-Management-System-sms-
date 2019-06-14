@@ -20,14 +20,15 @@ app.get('/', function(req, res, next) {
                     s.id,
                     s.name, 
                     c.className,
-                    s.gender, 
-                    s.dob,
-                    p.fatherName,
-                    p.motherName
-            FROM student AS s
-            LEFT JOIN class AS c ON c.id = s.classId
-            LEFT JOIN parent AS pp ON pp.id=s.fatherName
-            LEFT JOIN parent AS p ON p.id=s.MotherName`, (err, result) => {
+                    s.gender,
+                    s.fatherName,
+                    s.motherName,
+                    s.fatherMobile,
+                    s.motherMobile,
+                    s.address,
+                    s.note
+                FROM student AS s
+                LEFT JOIN class AS c ON c.id = s.classId`, (err, result) => {
                 if(err){
                     res.send(err);
                 }
@@ -35,33 +36,69 @@ app.get('/', function(req, res, next) {
         });
 });
 
+function getClasses()
+{
+    return new Promise((resolve, reject) => {
+        con.query("SELECT * FROM class", (err, result) => {
+            if(err)
+            {
+                reject(err);
+            }
+            resolve(result);
+        });
+    });
+}
+
 // Student add
-app.get('/add', (req, res) => {
-    res.render("student/add-student");
+app.get('/add', async(req, res) => {
+    let classes = await getClasses();
+    res.render("student/add-student", {classesResult: classes});
 });
 
-// Student Post
-app.post('/addData', (req, res) => {
-    con.query("INSERT INTO student(name, class, gender, dob, fatherName, motherName) VALUES('"+req.body.sname+"', '"+req.body.class+"', '"+req.body.gender+"', '"+req.body.dob+"', '"+req.body.fname+"', '"+req.body.mname+"')", function(err, result){
+// add student
+app.post('/insertStudent', (req, res) => {
+    con.query("INSERT INTO student(name, classId, gender, fatherName, motherName, fatherMobile, motherMobile, address, note) VALUES('"+req.body.sname+"', '"+req.body.classId+"', '"+req.body.gender+"', '"+req.body.fname+"', '"+req.body.mname+"', '"+req.body.fphone+"', '"+req.body.mphone+"', '"+req.body.address+"', '"+req.body.note+"')", (err, result) => {
         if(err){
             res.send(err);
         }
-            res.send("Data inserted successfully!");
+        res.redirect('/');
     });
 });
+
+// Student View
+app.get('/studentView/:id', (req, res) => {
+    con.query(`SELECT 
+                s.id,
+                s.name, 
+                c.className,
+                s.gender,
+                s.fatherName,
+                s.motherName,
+                s.fatherMobile,
+                s.motherMobile,
+                s.address,
+                s.note
+            FROM student AS s
+            LEFT JOIN class AS c ON c.id = s.classId
+            WHERE s.id=4`, (err, result) => {
+                if(err){
+                    res.send(err);
+                }
+                res.render("student/view-student", {studentViewData: result});
+            });
+});
+
+
 
 // Update
 app.get('/editS/:id', (req, res) => {
     con.query(`SELECT 
                 s.id,
                 s.name,
-                c.className,
                 s.gender,
-                s.dob,
-                p.fatherName,
-                pp.motherName
+
+
             FROM student AS s
-            LEFT JOIN class AS c ON c.id=s.classId
             LEFT JOIN parent AS p ON p.id=s.fatherName
             LEFT JOIN parent AS pp ON pp.id=s.motherName
             WHERE s.id = ? `, req.params.id, (err, result) => {
@@ -80,7 +117,6 @@ app.post('/editStudent/:id', (req, res) => {
                     name=           '${req.body.name}',
                     classId=        '${req.body.className}',
                     gender=         '${req.body.gender}',
-                    dob=            '${req.body.dob}',
                     fatherName=     '${req.body.fatherName}',
                     motherName=     '${req.body.motherName}'
                 WHERE id =          '${req.params.id}'`, (err, result) => {
@@ -88,48 +124,7 @@ app.post('/editStudent/:id', (req, res) => {
                         res.send(err);
                     }
                         res.render("student/student-list");
-                })
-});
-
-
-// ======================== Parent Data =========================//
-
-app.get('/parentList', (req, res) => {
-    con.query(`SELECT 
-                    p.id,
-                    s.name,
-                    p.fatherName,
-                    p.motherName,
-                    p.fatherMobile,
-                    p.motherMobile,
-                    p.address,
-                    p.note
-                FROM parent AS p
-                LEFT JOIN student AS s ON s.id=p.studentName`, function(err, data) {
-            if(err){
-            res.send(err);
-        }
-            res.render('parent/list-parent', {parentData: data});
-    });
-});
-
-app.get('/addParent', (req, res) => {
-    con.query("SELECT * FROM student", (err, value) => {
-        if(err){
-            res.send(err);
-        }
-            res.render("parent/add-parent", {studentParent: value});
-    });
-});
-
-app.post('/insertParent', (req, res, next) => {
-    con.query("INSERT INTO parent (studentName, fatherName, motherName, fatherMobile, motherMobile, address, note) VALUES('"+req.body.sname+"','"+req.body.fname+"', '"+req.body.mname+"', '"+req.body.fmobile+"', '"+req.body.mmobile+"', '"+req.body.address+"', '"+req.body.note+"')", (err, result) => {
-        if(err)
-        {
-            res.send(err);
-        }
-            res.send("Successfull!");
-    });
+                });
 });
 
 // ====================== Teacher Data ==========================//
@@ -340,7 +335,7 @@ app.get('/editStaff/:id', (req, res) => {
 });
 
 // Update POST
-app.post('/updateStaff', (req, res) => {
+app.post('/updateStaff/:id', (req, res) => {
     con.query(`UPDATE staff
                 SET
                 fullName= '${req.body.fname}',

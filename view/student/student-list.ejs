@@ -1,5 +1,4 @@
-<% include ../layout/header %>
-    
+        <% include ../layout/header %>
         <% include ../layout/top-menu%>
         <% include ../layout/side-menu%>
         <section class="main">
@@ -13,9 +12,12 @@
                                 <th>Name</th>
                                 <th>Class</th>
                                 <th>Gender</th>
-                                <th>Date of Birth</th>
                                 <th>Father Name</th>
                                 <th>Mother Name</th>
+                                <th>Father Mobile</th>
+                                <th>Mother Mobile</th>
+                                <th>Address</th>
+                                <th>Notes</th>
                                 <th colspan="3">Action</th>
                             </tr>
                         </thead>
@@ -26,17 +28,18 @@
                                 <td><%=item.name%></td>
                                 <td><%=item.className%></td>
                                 <td><%=item.gender%></td>
-                                <td><%=item.dob%></td>
                                 <td><%=item.fatherName%></td>
                                 <td><%=item.motherName%></td>
+                                <td><%=item.fatherMobile%></td>
+                                <td><%=item.motherMobile%></td>
+                                <td><%=item.address%></td>
+                                <td><%=item.note%></td>
                                 <td><a href="/editS/<%=item.id%>">Edit</a></td>
-                                <td><a href="/view/<%=item.id%>">View</a></td>
+                                <td><a href="/studentView/<%=item.id%>">View</a></td>
                                 <td><a href="/delete/:id">Delete</a></td>
                             </tr>
                             <% }) %>
                         </tbody>
                         </table>
         </section>
-     
-    
 <% include ../layout/footer%>

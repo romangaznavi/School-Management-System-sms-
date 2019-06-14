@@ -1,24 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/bootstrap.css">
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/bootstrap.js"></script>
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/popper.min.js"></script>
-
-    <title>List Teacher</title>
-</head>
-<body>
-    <div class="container">
-        <h1 style="text-align: center;">List of Teachers</h1>
+    <% include ../layout/header %>
+    <% include ../layout/top-menu %>
+    <% include ../layout/side-menu %>
+    <section class="main">
+        <h4>List of Teacherss
+            <a href="/addClass" class="btn btn-primary" id="btn1">Add Teacher</a>
+        </h4>
         <!-- <a href="/add" class="btn btn-primary">Add Student</a> -->
-        <table class="table table-striped table-bordered table-responsive">
+        <table class="table table-striped table-bordered">
             <thead>
                 <tr>
                     <th>Full Name</th>
@@ -47,7 +36,5 @@
                 <% }) %>
             </tbody>
         </div>
-        
-    </div>
-</body>
-</html>
+    </section>
+    <% include ../layout/footer %>        

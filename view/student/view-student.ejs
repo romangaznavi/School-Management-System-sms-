@@ -1,0 +1,33 @@
+<% include ../layout/header %>
+    
+        <% include ../layout/top-menu%>
+        <% include ../layout/side-menu%>
+        <section class="main">
+
+                <h4 class="title">Student details
+                        <a href="/" class="btn btn-primary float-right">Back to list</a>
+                </h4>
+                <table class="table table-striped table-bordered">
+                        <% studentViewData.forEach((item) => { %>
+                        <tbody>
+                            <tr>
+                                <th>Name</th><td><%=item.name%></td> </tr>
+                                <tr>  <th>Class</th><td><%=item.className%></td> </tr>
+                                <tr>  <th>Gender</th><td><%=item.gender%></td> </tr>
+                                <tr>   <th>Father Name</th> <td><%=item.fatherName%></td> </tr>
+                                <tr>   <th>Mother Name</th> <td><%=item.motherName%></td> </tr>
+                                <tr>   <th>Father Mobile</th> <td><%=item.fatherMobile%></td> </tr>
+                                <tr>   <th>Mother Mobile</th>  <td><%=item.motherMobile%></td> </tr>
+                                <tr>   <th>Address</th>  <td><%=item.address%></td> </tr>
+                                <tr>   <th>Notes</th>  <td><%=item.note%></td> </tr>
+                        
+                        </thead>
+            
+                            <% }) %>
+                        
+                        </table>
+                        
+        </section>
+     
+    
+<% include ../layout/footer%>

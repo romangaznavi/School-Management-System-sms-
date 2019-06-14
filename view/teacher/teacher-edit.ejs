@@ -1,0 +1,50 @@
+<% include ../layout/header %>
+<% include ../layout/top-minu%>
+<section class="main">
+<h1>Edit Teacher Here</h1>
+<%.forEach((item) => { %>
+<form action="/editTeacher/<%=item.id%>" method="POST" class="form-row">
+
+    <div class="form-group col-md-4">
+        <label for=""></label>
+        <input type="text" name="name" value="<%=item.name%>" class="form-control">
+    </div>
+
+    <div class="form-group col-md-4">
+        <label for="">Select Class</label>
+        <select name="classN" id="" class="form-control">
+            <option value="<%=item.id%>"><%=item.className%></option>
+        </select>
+    </div>
+
+    <div class="form-group col-md-4">
+        <label for="">Gender</label>
+        <input type="text" name="gender" value="<%=item.gender%>" class="form-control">
+    </div>
+
+    <div class="form-group col-md-4">
+        <label for="">Date of Birth</label>
+        <input type="text" name="dob" value="<%=item.dob%>" class="form-control">
+    </div>
+
+    <div class="form-group col-md-4">
+        <label for="">Father Name</label>
+        <select name="fatherName" id="" class="form-control">
+            <option value="<%=item.id%>"><%=item.fatherName%></option>
+        </select>
+    </div>
+
+    <div class="form-group col-md-4">
+        <label for="">Mother Name</label>
+        <select name="motherName" id="" class="form-control">
+            <option value="<%=item.id%>"><%=item.motherName%></option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" name="submit" value="Update Student" class="btn btn-primary">
+    </div>
+
+</form>   
+<% }); %>  
+</section>
