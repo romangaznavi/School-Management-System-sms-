@@ -49,21 +49,57 @@ function getClasses()
     });
 }
 
-// Student add
+// Student add function using (async await)
 app.get('/add', async(req, res) => {
-    let classes = await getClasses();
-    res.render("student/add-student", {classesResult: classes});
+    try {
+        let classes = await getClasses();
+        res.render("student/add-student", {classesResult: classes});
+    } catch (error) {
+        res.send(error);
+    }
+    
 });
 
-// add student
-app.post('/insertStudent', (req, res) => {
-    con.query("INSERT INTO student(name, classId, gender, fatherName, motherName, fatherMobile, motherMobile, address, note) VALUES('"+req.body.sname+"', '"+req.body.classId+"', '"+req.body.gender+"', '"+req.body.fname+"', '"+req.body.mname+"', '"+req.body.fphone+"', '"+req.body.mphone+"', '"+req.body.address+"', '"+req.body.note+"')", (err, result) => {
-        if(err){
-            res.send(err);
-        }
+// Add Function using "callback"
+// app.get('/add', (req, res) => {
+//     con.query("SELECT * FROM class", (err, result) => {
+//         if(err){
+//             res.send(err);
+//         }
+//         res.render("student/add-student", {classesResult: result});
+//     });
+// });
+app.post('/insertStudent', async(req, res) =>{
+    let students = await insertStudent(req.body);
+    try {
         res.redirect('/');
-    });
-});
+    } catch (error) {
+        res.send(err);
+    }
+})
+
+// add student using async await
+function insertStudent(data){
+    return new Promise((resolve, reject) => {
+        con.query("INSERT INTO student(name, classId, gender, fatherName, motherName, fatherMobile, motherMobile, address, note) VALUES('"+data.sname+"', '"+data.classId+"', '"+data.gender+"', '"+data.fname+"', '"+data.mname+"', '"+data.fphone+"', '"+data.mphone+"', '"+data.address+"', '"+data.note+"')", (err, result) => {
+            if(err){
+                reject(err);
+            }
+            resolve(result);
+        });
+    })
+}
+
+
+// add student using callback
+// app.post('/insertStudent', (req, res) => {
+//     con.query("INSERT INTO student(name, classId, gender, fatherName, motherName, fatherMobile, motherMobile, address, note) VALUES('"+req.body.sname+"', '"+req.body.classId+"', '"+req.body.gender+"', '"+req.body.fname+"', '"+req.body.mname+"', '"+req.body.fphone+"', '"+req.body.mphone+"', '"+req.body.address+"', '"+req.body.note+"')", (err, result) => {
+//         if(err){
+//             res.send(err);
+//         }
+//         res.redirect('/');
+//     });
+// });
 
 // Student View
 app.get('/studentView/:id', (req, res) => {
@@ -91,17 +127,21 @@ app.get('/studentView/:id', (req, res) => {
 
 
 // Update
-app.get('/editS/:id', (req, res) => {
+app.get('/editStudent/:id', (req, res) => {
     con.query(`SELECT 
                 s.id,
-                s.name,
+                s.name, 
+                c.className,
                 s.gender,
-
-
+                s.fatherName,
+                s.motherName,
+                s.fatherMobile,
+                s.motherMobile,
+                s.address,
+                s.note
             FROM student AS s
-            LEFT JOIN parent AS p ON p.id=s.fatherName
-            LEFT JOIN parent AS pp ON pp.id=s.motherName
-            WHERE s.id = ? `, req.params.id, (err, result) => {
+            LEFT JOIN class AS c ON c.id = s.classId
+            WHERE s.id= ? `, req.params.id, (err, result) => {
             if(err){
                 res.send(err);
             }
@@ -110,22 +150,56 @@ app.get('/editS/:id', (req, res) => {
 });
 
 // Update POST
-app.post('/editStudent/:id', (req, res) => {
+// app.post('/editStudent/:id', (req, res) => {
     
-    con.query(`UPDATE student
-                SET
-                    name=           '${req.body.name}',
-                    classId=        '${req.body.className}',
-                    gender=         '${req.body.gender}',
-                    fatherName=     '${req.body.fatherName}',
-                    motherName=     '${req.body.motherName}'
-                WHERE id =          '${req.params.id}'`, (err, result) => {
-                    if(err){
-                        res.send(err);
-                    }
-                        res.render("student/student-list");
-                });
+//     con.query(`UPDATE student
+//                 SET
+//                     name=           '${req.body.name}',
+//                     classId=        '${req.body.classN}',
+//                     gender=         '${req.body.gender}',
+//                     fatherName=     '${req.body.fatherName}',
+//                     motherName=     '${req.body.motherName}'
+//                 WHERE id =          '${req.params.id}'`, (err, result) => {
+//                     if(err){
+//                         res.send(err);
+//                     }
+//                         res.render("student/student-list");
+//                 });
+// });
+
+
+// doesn't work. alot of errors
+app.post('/updateStudent/:id', async(req, res) => {
+    let students = await updateStudent(req.body, req.params);
+    try {
+        res.redirect('/');
+} catch (error) {
+    res.send(error); 
+}
 });
+
+function updateStudent(data, value){
+    return new Promise((resolve, reject) => {
+        con.query(`UPDATE student
+                SET
+                    name=           '${data.name}',
+                    classId=        '${data.classN}',
+                    gender=         '${data.gender}',
+                    fatherName=     '${data.fname}',
+                    motherName=     '${data.mname}'
+                    fatherMobile=    ${data.fmobile},
+                    motherMobile=    ${data.mmobile},
+                    address=        '${data.address}',
+                    note=           '${data.notes}'
+                WHERE id =          '${value.id}'`, (err, result) => {
+                    if(err){
+                        reject(err);
+                    }
+                    resolve(result);
+                });   
+    });
+}
+
 
 // ====================== Teacher Data ==========================//
 
@@ -205,25 +279,25 @@ app.get('/subjectList', (req, res) => {
 
 // ======================== Assignment ==========================//
 
-// ADD ASSIGNMENT
-app.get('/asAdd', (req, res) => {
-    con.query("SELECT * FROM student", (err, result) => {
-        if(err){
-            res.send(err);
-        }
-        con.query("SELECT * FROM subject", (err, result1) => {
-            if(err){
-                res.send(err);
-            }
-            con.query("SELECT * FROM teacher", (err, result3) => {
-                if(err){
-                    res.send(err);
-                }
-                    res.render("assignment/add-assignment", { studentResult: result, subjectResult: result1, teacherResult: result3 });
-            });
-        });
-    });
-});
+// ADD ASSIGNMENT using callback
+// app.get('/asAdd', (req, res) => {
+//     con.query("SELECT * FROM student", (err, result) => {
+//         if(err){
+//             res.send(err);
+//         }
+//         con.query("SELECT * FROM subject", (err, result1) => {
+//             if(err){
+//                 res.send(err);
+//             }
+//             con.query("SELECT * FROM teacher", (err, result3) => {
+//                 if(err){
+//                     res.send(err);
+//                 }
+//                     res.render("assignment/add-assignment", { studentResult: result, subjectResult: result1, teacherResult: result3 });
+//             });
+//         });
+//     });
+// });
 
 // ADD ASSIGNMENT
 app.post('/addAssignment', (req, res) => {
@@ -234,6 +308,61 @@ app.post('/addAssignment', (req, res) => {
             res.send("Data added");
     });
 });
+
+// Add Using async await 
+function getStudent() {
+    return new Promise((resolve, reject) => {
+        con.query("SELECT * FROM student", (err, student) => {
+            if(err){
+                reject(err);
+            }
+            resolve(student);
+        });
+    });
+}
+
+function getSubject() {
+    return new Promise((resolve, reject) => {
+        con.query("SELECT * FROM subject", (err, subject) => {
+            if(err){
+                reject(err);
+            }
+            resolve(subject);
+        });
+    });
+}
+
+function getTeacher() {
+    return new Promise((resolve, reject) => {
+        con.query("SELECT * FROM teacher", (err, teacher) => {
+            if(err){
+                reject(err);
+            }
+            resolve(teacher);
+        });
+    });
+}
+
+app.get('/asAdd', async(req, res) => {
+    try {
+        let students = await getStudent();
+        let subjects = await getSubject();
+        let teachers = await getTeacher();
+        
+        res.render("assignment/add-assignment", {studentResult: students, subjectResult: subjects, teacherResult: teachers});
+    } catch (error) {
+        res.send(error);
+    }
+});
+
+
+
+
+
+
+
+
+
 
 // LIST ASSIGNMENT
 
