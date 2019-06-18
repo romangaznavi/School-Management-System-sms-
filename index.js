@@ -550,12 +550,12 @@ function updateAssignment(data, value){
     return new Promise(function(resolve, reject) {
         con.query(`UPDATE assignment
                     SET
-                        studentId = ${data.sId},
-                        assignmentSubject = ${data.assignmentSub},
-                        assignmentTeacher = ${data.assignmentListTeach},,
-                        completed = '${data.completed}',
-                        incomplete = '${data.incomplete}',
-                        notes = '${data.notes}'
+                        studentId =             ${data.sId},
+                        assignmentSubject =     ${data.assignmentSubject},
+                        assignmentTeacher =     ${data.assignmentListTeach},,
+                        completed =             '${data.completed}',
+                        incomplete =            '${data.incomplete}',
+                        notes =                 '${data.notes}'
                     WHERE id = ? `, value.id, (err, result) => {
                         if(err){
                             reject(err);
