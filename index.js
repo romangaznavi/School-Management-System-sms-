@@ -90,7 +90,6 @@ function insertStudent(data){
     })
 }
 
-
 // add student using callback
 // app.post('/insertStudent', (req, res) => {
 //     con.query("INSERT INTO student(name, classId, gender, fatherName, motherName, fatherMobile, motherMobile, address, note) VALUES('"+req.body.sname+"', '"+req.body.classId+"', '"+req.body.gender+"', '"+req.body.fname+"', '"+req.body.mname+"', '"+req.body.fphone+"', '"+req.body.mphone+"', '"+req.body.address+"', '"+req.body.note+"')", (err, result) => {
@@ -102,6 +101,7 @@ function insertStudent(data){
 // });
 
 // Student View
+
 app.get('/studentView/:id', (req, res) => {
     con.query(`SELECT 
                 s.id,
@@ -123,8 +123,6 @@ app.get('/studentView/:id', (req, res) => {
                 res.render("student/view-student", {studentViewData: result});
             });
 });
-
-
 
 // Update
 app.get('/editStudent/:id', (req, res) => {
@@ -167,8 +165,7 @@ app.get('/editStudent/:id', (req, res) => {
 //                 });
 // });
 
-
-// doesn't work. alot of errors
+// Student Update
 app.post('/updateStudent/:id', async(req, res) => {
     let students = await updateStudent(req.body, req.params);
     try {
@@ -186,12 +183,12 @@ function updateStudent(data, value){
                     classId=        '${data.classN}',
                     gender=         '${data.gender}',
                     fatherName=     '${data.fname}',
-                    motherName=     '${data.mname}'
-                    fatherMobile=    ${data.fmobile},
-                    motherMobile=    ${data.mmobile},
+                    motherName=     '${data.mname}',
+                    fatherMobile=   ${data.fmobile},
+                    motherMobile=   ${data.mmobile},
                     address=        '${data.address}',
                     note=           '${data.notes}'
-                WHERE id =          '${value.id}'`, (err, result) => {
+                WHERE id =          ${value.id}`, (err, result) => {
                     if(err){
                         reject(err);
                     }
@@ -203,24 +200,46 @@ function updateStudent(data, value){
 
 // ====================== Teacher Data ==========================//
 
-app.get('/addClass', function(req, res) {
-    con.query("SELECT * FROM class", (err, data) => {
-        if(err){
-            res.send(err);
-        }
-            res.render("teacher/teacher-add", {classData: data});
+function getClassData(){
+    return new Promise((resolve, reject) =>{
+        con.query("SELECT * FROM class", (err, data) => {
+            if(err){
+                reject(err);
+            }
+                resolve(data);
+        });
     });
+}
+
+app.get('/addClass', async (req, res) =>{
+    try {
+        let classes = await getClassData();
+        res.render("teacher/teacher-add", {classResult: classes});
+    } catch (error) {
+        res.send(error);
+    }
 });
 
-app.post('/addTeacherData', (req, res, next) => {
-    con.query("INSERT INTO teacher (fullName, classId, dob, gender, joiningDate) VALUES('"+req.body.fname+"', '"+req.body.classId+"', '"+req.body.dob+"', '"+req.body.gender+"', '"+req.body.jdate+"')", (err, result) => {
-        if(err)
-        {
-            res.send(err);
-        }
-            res.redirect("Teacher Added Successfully");
-    });
+app.post('/addTeacherData', async(req, res) => {
+    try {
+        let teachers = await addTeacherData(req.body);
+        res.redirect("teacherList");
+    } catch (error) {
+        res.send(error);
+    }
 });
+
+function addTeacherData(data){
+    return new Promise((resolve, reject) => {
+        con.query("INSERT INTO teacher (fullName, classId, dob, gender, joiningDate) VALUES('"+data.fname+"', '"+data.classId+"', "+data.dob+", '"+data.gender+"', "+data.jdate+")", (err, result) => {
+            if(err)
+            {
+                reject(err);
+            }
+                resolve(result);
+        });
+    });
+}
 
 // LIST TEACHER
 app.get('/teacherList', (req, res) => {
@@ -239,30 +258,84 @@ app.get('/teacherList', (req, res) => {
                 });
 });
 
-// ========================= Subject ============================//
-// ADD SUBJECT
-app.get('/addSubject', function(req, res) {
-    con.query("SELECT * FROM teacher", (err, data) => {
-        if(err){
-            res.send(err);
-        }
-            res.render("subject/add-subject", { sData: data });
-    });
+// Update Get
+app.get('/teacherEdit/:id', (req, res) =>{
+    con.query(`SELECT 
+                    t.id,
+                    t.fullName,
+                    c.className,
+                    t.dob,
+                    t.gender,
+                    t.joiningDate
+                FROM teacher AS t
+                LEFT JOIN class AS c ON c.id=t.classId
+                WHERE t.id = ? `, req.params.id, (err, result) => {
+                    if(err){
+                        res.send(err);
+                    }
+                    res.render("teacher/teacher-edit", {teacherEditResult: result});
+                });
 });
 
-app.post('/insertSubject', (req, res, next) => {
-    con.query("INSERT INTO subject (subjectName, teacherId, subjectTeachingDay, startTime, endTime) VALUES('"+req.body.sname+"','"+req.body.teacherId+"', '"+req.body.subjectTeachingDay+"', '"+req.body.stime+"', '"+req.body.etime+"')", (err, result) => {
-        if(err)
-        {
-            res.send(err);
-        }
-            res.redirect("Teacher Added Successfully");
+function editTeacher(){
+    return new Promise((resolve, reject) => {
+        con.query(`UPDATE teacher
+                    SET
+
+                        `)
     });
+}
+
+// ========================= Subject ============================//
+// Add using async await
+
+app.post('/subjectAdd', async(req, res) => {
+    let subjects = await insertSubject(req.body);
+    try {
+        res.redirect("subjectList");
+    } catch (error) {
+        res.send(error);
+    }
 });
+
+
+function insertSubject(data){
+    return new Promise((resolve, reject) => {
+        con.query("INSERT INTO subject (subjectName, teacherId, subjectTeachingDay, startTime, endTime) VALUES('"+data.sname+"','"+data.teacherId+"', '"+data.tDay+"', '"+data.stime+"', '"+data.etime+"')", (err, result) => {
+            if(err)
+            {
+                reject(err);
+            }
+                resolve(result);
+        });
+    });
+}
+
+// Get teacher Data
+app.get('/teacherAdd', async(req, res) => {
+    try {
+        let teachers = await getTeacherData();
+        res.render("subject/add-subject", {teachersResult: teachers});
+    } catch (error) {
+        res.send(error);
+    }
+});
+
+function getTeacherData(){
+    return new Promise((resolve, reject) => {
+        con.query("SELECT * FROM teacher", (err, result) =>{
+            if(err){
+                reject(err);
+            }
+            resolve(result);
+        });
+    });
+}
 
 // LIST SUBJECT
 app.get('/subjectList', (req, res) => {
     con.query(`SELECT 
+                s.id,
                 s.subjectName,
                 t.fullName,
                 s.subjectTeachingDay,
@@ -276,6 +349,81 @@ app.get('/subjectList', (req, res) => {
                     res.render("subject/list-subject", {subListData: result});
             });
 });
+
+// Update
+app.get('/getSubjectData/:id', (req, res) => {
+    con.query(`SELECT 
+                    s.id,
+                    s.subjectName,
+                    t.fullName,
+                    s.subjectTeachingDay,
+                    s.startTime,
+                    s.endTime
+                FROM subject AS s
+                LEFT JOIN teacher AS t ON t.id=s.teacherId
+                WHERE s.id = ?`, req.params.id, (err, result) => {
+                    if(err){
+                        res.send(err);
+                    }
+                    res.render("subject/edit-subject", {subjectEditResult: result});
+                });
+});
+
+app.post('/updateSubject/:id', async(req, res) => {
+    try {
+        let subjects = await updateSubject(req.body, req.params);
+        res.redirect("subjectList");
+    } catch (error) {
+        res.send(error);
+    }
+});
+
+function updateSubject(data, value) {
+    return new Promise((resolve, reject) => {
+        con.query(`UPDATE subject
+                    SET
+                        subjectName =           '${data.sname}',
+                        teacherId=              ${data.teacherName},
+                        subjectTeachingDay=     '${data.tDay}',
+                        startTime=              ${data.sTime},
+                        endTime=                ${data.eTime}
+                    WHERE id =                  ${value.id}`, (err, subjectData) => {
+                        if(err){
+                            reject(err);
+                        }
+                        resolve(subjectData);
+                    });
+    });
+}
+
+app.get('/subjectView/:id', (req, res) => {
+    con.query(`SELECT 
+                s.id,
+                s.subjectName,
+                t.fullName,
+                s.subjectTeachingDay,
+                s.startTime,
+                s.endTime
+            FROM subject AS s
+            LEFT JOIN teacher AS t ON t.id=s.teacherId
+            WHERE s.id = ?`, req.params.id, (err, result) =>{
+        if(err){
+            res.send(err);
+        }
+        res.render("subject/subject-view", {subjectViewResult: result});
+    });
+});
+
+// Delete Subject 
+app.get('/deleteSubject/:id', (req, res) => {
+    con.query("DELETE FROM subject WHERE id= ?", req.params.id, (err, result) =>{
+        if(err){
+            res.send(err);
+        }
+        res.redirect("/subjectList");
+    })
+});
+
 
 // ======================== Assignment ==========================//
 
@@ -305,7 +453,7 @@ app.post('/addAssignment', (req, res) => {
         if(err){
             res.send(err);
         }
-            res.send("Data added");
+            res.redirect("assignmentList");
     });
 });
 
@@ -343,7 +491,7 @@ function getTeacher() {
     });
 }
 
-app.get('/asAdd', async(req, res) => {
+app.get('/assignmentAdd', async(req, res) => {
     try {
         let students = await getStudent();
         let subjects = await getSubject();
@@ -354,20 +502,11 @@ app.get('/asAdd', async(req, res) => {
         res.send(error);
     }
 });
-
-
-
-
-
-
-
-
-
-
 // LIST ASSIGNMENT
 
-app.get('/asList', (req, res) => {
+app.get('/assignmentList', (req, res) => {
     con.query(`SELECT 
+                s.id,
                 s.name,
                 sub.subjectName,
                 t.fullName,
@@ -383,6 +522,56 @@ app.get('/asList', (req, res) => {
                 }
                     res.render("assignment/list-assignment", {assignData: result});
         });
+});
+// Edit Show data
+app.get('/showAssignment/:id', (req, res) => {
+    con.query(`SELECT 
+                    a.id,
+                    s.name,
+                    sub.subjectName,
+                    t.fullName,
+                    a.completed,
+                    a.incomplete,
+                    a.notes
+                    FROM assignment as a
+                    LEFT JOIN student AS s ON s.id = a.studentId
+                    LEFT JOIN subject AS sub ON sub.id = a.assignmentSubject
+                    LEFT JOIN teacher AS t ON t.id = a.assignmentTeacher
+                    WHERE a.id = ?`, req.params.id, (err, result) => {
+                        if(err){
+                            res.send(err);
+                        }
+                        res.render("assignment/edit-assignment", {assignmentResult: result});
+                    });
+});
+// Update Post
+
+function updateAssignment(data, value){
+    return new Promise(function(resolve, reject) {
+        con.query(`UPDATE assignment
+                    SET
+                        studentId = ${data.sId},
+                        assignmentSubject = ${data.assignmentSub},
+                        assignmentTeacher = ${data.assignmentListTeach},,
+                        completed = '${data.completed}',
+                        incomplete = '${data.incomplete}',
+                        notes = '${data.notes}'
+                    WHERE id = ? `, value.id, (err, result) => {
+                        if(err){
+                            reject(err);
+                        }
+                        resolve(result);
+                    });
+    });
+}
+
+app.post('/updateAssignment/:id', async(req, res) => {
+    try {
+        let assignments = updateAssignment(req.body, req.params);
+        res.redirect("/assignmentList");
+    } catch (error) {
+        res.send(error);
+    }
 });
 
 // =========================== CLASS ===========================

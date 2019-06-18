@@ -1,0 +1,53 @@
+<% include ../layout/header %>
+<% include ../layout/top-menu %>
+<% include ../layout/side-menu %>
+
+<section class="main">
+    <%assignmentResult.forEach((item) => { %>
+    <h4>Assignment Update Page
+        <span style="float: right; padding-bottom: 10px;"><a href="/assignmentList" class="btn btn-primary">Add Assignment</a></span>
+    </h4>
+    <form action="/updateAssignment/<%=item.id%>" method="POST" class="form-row">
+        <div class="form-group col-md-4">
+            <label for="sId">Select Student</label>
+            <select name="sId" id="" class="form-control">
+                <option value="<%=item.id%>"><%=item.name %></option>
+            </select>
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="assignmentSub"> Assignment Subject</label>
+            <select name="assignmentSub" id="" class="form-control">
+                <option value="<%=item.id%>"><%=item.subjectName%></option>
+            </select>
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="">Assignment Teacher</label>
+            <select name="assignmentListTeach" id="" class="form-control">
+                <option value="<%=item.id%>"><%=item.fullName%></option>
+            </select>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for=""># of Completed Assignments</label>
+            <input type="text" name="completed" value="<%=item.completed%>" class="form-control">
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for=""># of Incomplete Assignments</label>
+            <input type="text" name="incomplete" value="<%=item.incomplete%>" class="form-control">
+        </div>
+
+
+        <div class="form-group col-md-12">
+            <label for="">Notes</label>
+            <textarea name="notes" id="notes" cols="135" rows="5"></textarea>
+        </div>
+
+        <div class="form-group">
+                <input type="submit" name="submit" value="Edit Assignments" class="btn btn-primary">
+            </div>
+    </form>
+    <% }) %>
+</section>

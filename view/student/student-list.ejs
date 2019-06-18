@@ -1,5 +1,5 @@
         <% include ../layout/header %>
-        <% include ../layout/top-menu%>
+        <% include ../layout/top-menu %>
         <% include ../layout/side-menu%>
         <section class="main">
 
@@ -34,9 +34,9 @@
                                 <td><%=item.motherMobile%></td>
                                 <td><%=item.address%></td>
                                 <td><%=item.note%></td>
-                                <td><a href="/editS/<%=item.id%>">Edit</a></td>
+                                <td><a href="/editStudent/<%=item.id%>">Edit</a></td>
                                 <td><a href="/studentView/<%=item.id%>">View</a></td>
-                                <td><a href="/delete/:id">Delete</a></td>
+                                <td><a href="/delete/<%=item.id%>">Delete</a></td>
                             </tr>
                             <% }) %>
                         </tbody>

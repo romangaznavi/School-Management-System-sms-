@@ -1,13 +1,13 @@
 <% include ../layout/header %>
 <% include ../layout/top-minu%>
 <section class="main">
-<h1>Edit Teacher Here</h1>
-<%.forEach((item) => { %>
-<form action="/editTeacher/<%=item.id%>" method="POST" class="form-row">
+<h4>Edit Teacher Here</h4>
+<% teacherEditResult.forEach((item) => { %>
+<form action="/teacherEdit/<%=item.id%>" method="POST" class="form-row">
 
     <div class="form-group col-md-4">
         <label for=""></label>
-        <input type="text" name="name" value="<%=item.name%>" class="form-control">
+        <input type="text" name="name" value="<%=item.fullName%>" class="form-control">
     </div>
 
     <div class="form-group col-md-4">

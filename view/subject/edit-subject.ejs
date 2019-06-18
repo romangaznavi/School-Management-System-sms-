@@ -1,0 +1,88 @@
+<% include ../layout/header %>
+<% include ../layout/top-menu %>
+<% include ../layout/side-menu %>
+<section class="main">
+    <h4>Update subjects</h4>
+    <a href="/asdf">Add Subject</a>
+            <% subjectEditResult.forEach((item) => { %>
+            <form action="/updateSubject/<%= item.id%>" method="POST" class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="sname">Name of subject </label>
+                    <input type="text" name="sname" value="<%=item.subjectName%>" class="form-control">
+                </div>
+    
+                <div class="form-group col-md-6">
+                <label for="">Select Teacher:</label>
+                    <select class="form-control" name="teacherName" id="teacherName" >
+                        <option value="<%=item.id%>"><%=item.fullName%></option>
+                </select>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="subjectTeachingDay">Teaching Day </label>
+                    <select name="tDay" id="tDay" class="form-control">
+                        <option value="">Select Teaching Day</option>
+                        <% if (item.subjectTeachingDay == "saturday") { %>
+                            <option value="saturday" selected>Saturday</option>
+                            <option value="saturday">Sunday</option>
+                            <option value="saturday">Monday</option>
+                            <option value="saturday">Tuesday</option>
+                            <option value="saturday">Wednesday</option>
+                            <option value="saturday">Thursday</option>
+                        <% } else if(item.subjectTeachingDay== "sunday") { %>
+                            <option value="saturday">Saturday</option>
+                            <option value="sunday" selected>Sunday</option>
+                            <option value="saturday">Monday</option>
+                            <option value="saturday">Tuesday</option>
+                            <option value="saturday">Wednesday</option>
+                            <option value="saturday">Thursday</option>
+                        <% } else if(item.subjectTeachingDay == "monday") { %>
+                            <option value="saturday">Saturday</option>
+                            <option value="sunday">Sunday</option>
+                            <option value="monday" selected>Monday</option>
+                            <option value="saturday">Tuesday</option>
+                            <option value="saturday">Wednesday</option>
+                            <option value="saturday">Thursday</option>
+                        <% } else if(item.subjectTeachingDay == "tuesday") { %>
+                            <option value="saturday">Saturday</option>
+                            <option value="sunday">Sunday</option>
+                            <option value="monday">Monday</option>
+                            <option value="tuesday" selected>Tuesday</option>
+                            <option value="saturday">Wednesday</option>
+                            <option value="saturday">Thursday</option>
+                        <% } else if(item.subjectTeachingDay == "wednesday") { %>
+                            <option value="saturday">Saturday</option>
+                            <option value="sunday">Sunday</option>
+                            <option value="monday">Monday</option>  
+                            <option value="tuesday">Tuesday</option>  
+                            <option value="wednesday" selected>Wednesday</option>
+                            <option value="thursday">Thursday</option>
+                        <% } else { %>
+                            <option value="saturday">Saturday</option>
+                            <option value="sunday">Sunday</option>
+                            <option value="monday">Monday</option>  
+                            <option value="tuesday">Tuesday</option> 
+                            <option value="wednesday">Wednesday</option> 
+                            <option value="thursday" selected>Thursday</option>
+                        <% } %>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="stime">Start Time </label>
+                    <input type="time" name="sTime" value="<%=item.startTime%>"  class="form-control">
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label for="etime">End Time </label>
+                    <input type="time" name="eTime" value="<%= item.endTime%>"  class="form-control">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <input type="submit" value="Add subject" class="btn btn-primary">
+                    <a href="/subjectList" class="btn btn-primary">List subject</a>
+                </div>
+            </form>
+            <% }); %>
+        </section>
+        <% include ../layout/footer %>

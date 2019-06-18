@@ -23,15 +23,14 @@
             <tbody>
                 <% teacherListData.forEach((item) => { %>
                 <tr>
-                    <!-- This did not come from Parent table, the data came from their respctive table. I dont know if it is right or wrong -->
                     <td><%=item.fullName%></td>
                     <td><%=item.className%></td>
                     <td><%=item.dob%></td>
                     <td><%=item.gender%></td>
                     <td><%=item.joiningDate%></td>
-                    <td><a href="/edit/:id">Edit</a></td>
-                    <td><a href="/view/:id">View</a></td>
-                    <td><a href="/delete/:id">Delete</a></td>
+                    <td><a href="/teacherEdit/<%=item.id%>">Edit</a></td>
+                    <td><a href="/view/<%=item.id%>">View</a></td>
+                    <td><a href="/delete/<%=item.id%>">Delete</a></td>
                 </tr>
                 <% }) %>
             </tbody>

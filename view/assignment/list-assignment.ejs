@@ -2,8 +2,9 @@
 <% include ../layout/top-menu %>
 <% include ../layout/side-menu %>
         <section class="main">
-        <h3 style="text-align: center;">List of Classes</h3>
-        <!-- <a href="/add" class="btn btn-primary">Add Student</a> -->
+        <h4>List of Assignments
+           <span style="float: right; padding-bottom: 10px;"> <a href="/assignmentAdd" class="btn btn-primary">Add Assignment</a></span>
+        </h4>
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>
@@ -20,16 +21,15 @@
             <tbody>
                 <% assignData.forEach((item) => { %>
                 <tr>
-                    <!-- This did not come from Parent table, the data came from their respctive table. I dont know if it is right or wrong -->
                     <td><%=item.name%></td>
                     <td><%=item.subjectName%></td>
                     <td><%=item.fullName%></td>
                     <td><%=item.completed%></td>
                     <td><%=item.incomplete%></td>
                     <td><%=item.notes%></td>
-                    <td><a href="/edit/:id">Edit</a></td>
-                    <td><a href="/view/:id">View</a></td>
-                    <td><a href="/delete/:id">Delete</a></td>
+                    <td><a href="/showAssignment/<%=item.id%>">Edit</a></td>
+                    <td><a href="/view/<%=item.id%>">View</a></td>
+                    <td><a href="/delete/<%=item.id%>">Delete</a></td>
                 </tr>
                 <% }) %>
             </tbody>

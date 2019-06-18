@@ -42,7 +42,7 @@
                     <td><%=item.joiningDate%></td>
                     <td><%=item.salary%></td>
                     <td><a href="/editStaff/<%=item.id%>">Edit</a></td>
-                    <td><a href="/view/:id">View</a></td>
+                    <td><a href="/view/<%= item.id %>">View</a></td>
                     <td><a href="/delete/:id">Delete</a></td>
                 </tr>
                 <% }) %>
