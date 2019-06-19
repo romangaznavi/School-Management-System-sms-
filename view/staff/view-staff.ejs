@@ -1,0 +1,26 @@
+<% include ../layout/header %>
+<% include ../layout/top-menu %>
+<% include ../layout/side-menu %>
+
+<section class="main">
+    
+        <h4>View  Staff
+           <span style="float: right; padding-bottom:10px;"><a href="/stafflist" class="btn btn-primary">List Staff</a></span>
+        </h4>
+        <!-- <a href="/add" class="btn btn-primary">Add Student</a> -->
+        <table class="table table-striped table-bordered">
+            <thead>
+                    <% viewStaffData.forEach((item) => { %>
+                <tr>
+                    <tr><th>Full Name</th> <td><%=item.fullName%></td></tr>
+                    <tr><th> Designation</th> <td><%=item.designation%></td></tr>
+                    <tr><th>Mobile</th> <td><%=item.mobile%></td></tr>
+                    <tr><th>Address</th> <td><%=item.address%></td></tr>
+                    <tr><th>Joining Date</th>  <td><%=item.joiningDate%></td></tr>
+                    <tr><th>Salary</th> <td><%=item.salary%></td></tr>
+                </tr>
+                <% }) %>
+            </thead>
+        
+    </section>
+    <% include ../layout/footer %>
