@@ -575,34 +575,64 @@ app.post('/updateAssignment/:id', async(req, res) => {
 });
 
 // =========================== CLASS ===========================
+// Add Class Info for Dropdowns
+app.get('/classInfo', async(req, res) => {
+    try {
+        let teachers  = await getTeacherData();
+        let subjects = await getSubjectData();
+        res.render("class/add-class", {teachersResult: teachers, subjectsResult: subjects});
+    } catch (error) {
+        res.send(error);
+    }
+})
 
-app.get('/aaa', (req, res) => {  
-    con.query("SELECT * FROM teacher", (err, teacherr) => {
-        if(err){
-            res.send(err);
-        }
-        con.query("SELECT * FROM subject", (err, subjectt) => {
+function getTeacherData(){
+    return new Promise(function(resolve, reject) {
+        con.query("SELECT * FROM teacher", (err, teacher) =>{
             if(err){
-                res.send(err);
+                reject(err);
             }
-                res.render('class/add-class', {teacherData: teacherr, subjectData: subjectt });
+            resolve(teacher);
         });
     });
+}
+
+function getSubjectData(){
+    return new Promise((resolve, reject) =>{
+        con.query("SELECT * FROM subject", (err, subject) =>{
+            if(err){
+                reject(err);
+            }
+            resolve(subject);
+        });
+    }); 
+}
+
+// Class POST Data
+app.post('/addClass', async(req, res) => {
+    let classes = await addClass(req.body);
+    try {
+        res.redirect("/listClas");
+    } catch (error) {
+        res.send(error);
+    }
 });
 
-// ADD CLASS
-app.post('/addClass', (req, res) => {
-    con.query("INSERT INTO class (className, teacherId, subjectId) VALUES('"+req.body.classNumber+"', '"+req.body.teach+"', '"+req.body.sub+"')", (err, data) => {
-        if(err){
-            res.send(err);
-        }
-            res.send("Data added");
+function addClass(data){
+    return new Promise((resolve, reject) =>{
+        con.query("INSERT INTO class (className, teacherId, subjectId) VALUES('"+data.className+"', '"+data.teacherName+"', '"+data.subjectName+"')", (err, result) => {
+            if(err){
+                reject(err);
+            }
+                resolve(result);
+        });
     });
-});
+}
 
 // LIST CLASS
 app.get('/listClas', (req, res) => {
     con.query(`SELECT 
+                    c.id,
                     c.className,
                     t.fullName,
                     s.subjectName
@@ -613,8 +643,70 @@ app.get('/listClas', (req, res) => {
                         res.send(err);
                     }
                         res.render("class/list-class", {classResult: result});
-                })
-})
+                });
+});
+
+// Edit Class
+app.get('/editClass/:id', (req, res) => {
+    con.query(`SELECT 
+                c.id,
+                c.className,
+                t.fullName,
+                s.subjectName
+            FROM class AS c
+            LEFT JOIN teacher AS t ON t.id = c.teacherId
+            LEFT JOIN subject AS s ON s.id = c.subjectId 
+            WHERE c.id = ?`, req.params.id, (err, result) => {
+        if(err){
+            res.send(err);
+        }
+        res.render("class/edit-class", {classInfoResult: result});
+    });
+});
+
+// POST UPDATE CLASS
+app.post('/updateClass/:id', async(req, res) => {
+    let classes = await updateClass(req.body, req.params);
+    try {
+        res.redirect("/listClas");
+    } catch (error) {
+        res.send(error);
+    }
+});
+
+function updateClass(data, value){
+    return new Promise((resolve, reject) => {
+    con.query(`UPDATE class
+                SET
+                    className = '${data.className}',
+                    teacherId = '${data.teacherName}',
+                    subjectId = '${data.subjectName}'
+                WHERE id = ?`, value.id, (err, result) => {
+                if(err){
+                    reject(err);
+                }
+                resolve(result);
+            });
+    });
+}
+
+// VIEW CLASS
+app.get('/viewClass/:id', (req, res) => {
+    con.query(`SELECT 
+                c.id,
+                c.className,
+                t.fullName,
+                s.subjectName
+            FROM class AS c
+            LEFT JOIN teacher AS t ON t.id = c.teacherId
+            LEFT JOIN subject AS s ON s.id = c.subjectId
+            WHERE c.id = ?`, req.params.id, (err, result) => {
+                if(err){
+                    res.send(err);
+                }
+                res.render("class/view-class", {classViewData: result});
+            });
+});
 
 // =========================== STAFF ===========================
 
@@ -628,7 +720,7 @@ app.post('/insertStaff', (req, res) => {
         if(err){
             res.send(err);
         }
-            res.send("Data added");
+            res.redirect("/stafflist");
     });
 });
 
@@ -658,18 +750,38 @@ app.post('/updateStaff/:id', (req, res) => {
                 SET
                 fullName= '${req.body.fname}',
                 designation= '${req.body.designation}',
-                mobile= '${mobile}',
-                address= '${address}',
-                joiningDate= '${jdate}',
-                salary= '${salary}'
+                mobile= ${req.body.mobile},
+                address= '${req.body.address}',
+                joiningDate= '${req.body.jdate}',
+                salary= ${req.body.salary}
                 WHERE id= '${req.params.id}'`, function(err, result){
                     if(err){
                         res.send(err);
                     }
-                        res.send("staff/list-staff");
+                        res.redirect("/stafflist");
                 });
 });
 
+// Staff View
+app.get('/staffView/:id', (req, res) => {
+    con.query("SELECT * FROM staff WHERE id = ?", req.params.id, (err, result) =>{
+        if(err){
+            res.send(err);
+        }
+        res.render("staff/view-staff", {viewStaffData: result});
+    });
+});
+
+// Delete Staff
+app.get('/deleteStaff/:id', (req, res) => {
+    con.query("DELETE FROM staff WHERE id = ? ", req.params.id,(err, result) =>{
+        if(err){
+            res.send(err);
+        }
+        res.redirect("/stafflist");
+    });
+});
 app.listen(port, (req, res) => {
     console.log("Your application is running on port", port);
+
 });
