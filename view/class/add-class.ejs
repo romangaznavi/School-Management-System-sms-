@@ -1,41 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/bootstrap.js"></script>
-    <script src="js/jquery.min.css"></script>
-    <script src="js/popper.min.js"></script>
-    <title>Add Class</title>
-</head>
-<body>
-    <div class="container">
-            <h1>Add Class</h1>
+
+<% include ../layout/header %>
+<% include ../layout/top-menu %>
+<% include ../layout/side-menu %>
+        <section class="main">
+            <h4>Add Class</h4>
             <form action="/addClass" method="POST" class="form-row">
                 <div class="form-group col-md-4">
-                    <label for="classNumber">Please enter class number</label>
-                    <input type="text" name="classNumber" class="form-control" placeholder="Class Number i.e First, second...">
+                    <label for="classNumber">Select Class</label>
+                    <select name="className" id="" class="form-control">
+                        <option value="">Select Class</option>
+                        <option value="one">First</option>
+                        <option value="second">Second</option>
+                        <option value="third">Third</option>
+                        <option value="fourth">Fourth</option>
+                        <option value="fifth">Fifth</option>
+                        <option value="sixth">Sixth</option>
+                    </select>
                 </div>
 
                 <div class="form-group col-md-4">
-                    <label for="teach">Select Teacher</label>
-                    <select name="teach" id="" class="form-control">
+                    <label for="teacher">Select Teacher</label>
+                    <select name="teacherName" id="" class="form-control">
                         <option value="default">Select Teacher</option>
-                        <%teacherData.forEach((item) => { %>
+                        <%teachersResult.forEach((item) => { %>
                         <option value="<%=item.id%>"><%=item.fullName%></option>
                         <% }) %>
                     </select>
                 </div>
 
                 <div class="form-group col-md-4">
-                    <label for="sub">Select Subject</label>
-                    <select name="sub" id="" class="form-control">
+                    <label for="subject">Select Subject</label>
+                    <select name="subjectName" id="" class="form-control">
                         <option value="default">Select Subject</option>
-                        <%subjectData.forEach((item) => { %>
+                        <%subjectsResult.forEach((item) => { %>
                         <option value="<%=item.id%>"><%= item.subjectName %></option>
                         <% }) %>
                     </select>
@@ -46,6 +43,6 @@
                 </div>
     
             </form>
-    </div>
-</body>
-</html>
+        </section>
+
+        <% include ../layout/footer %>
