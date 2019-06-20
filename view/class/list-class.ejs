@@ -2,34 +2,34 @@
 <% include ../layout/header %>
 <% include ../layout/top-menu %>
 <% include ../layout/side-menu %>
-        <section class="main">
-        <h4>List of Classes
-           <span style="float: right;"><a href="/classInfo" class="btn btn-primary">Add Class</a></span>
-        </h4>
-        <table class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>Class</th>
-                    <th>Teacher Name</th>
-                    <th>Subject Name</th>
-                    <th colspan="3">Action</th>
-                </tr>
-            </thead>
+    <section class="main">
+    <h4>List of Classes
+        <span style="float: right;"><a href="/classInfo" class="btn btn-primary">Add Class</a></span>
+    </h4>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Class</th>
+                <th>Teacher Name</th>
+                <th>Subject Name</th>
+                <th colspan="3">Action</th>
+            </tr>
+        </thead>
 
-            <tbody>
-                <% classResult.forEach((item) => { %>
-                <tr>
-                    <td><%=item.className%></td>
-                    <td><%=item.fullName%></td>
-                    <td><%=item.subjectName%></td>
-                    <td><a href="/editClass/<%= item.id %>">Edit</a></td>
-                    <td><a href="/viewClass/<%= item.id %>">View</a></td>
-                    <td><a href="/delete/:id">Delete</a></td>
-                </tr>
-                <% }) %>
-            </tbody>
-        </div>
-    </table>
+        <tbody>
+            <% classResult.forEach((item) => { %>
+            <tr>
+                <td><%=item.className%></td>
+                <td><%=item.fullName%></td>
+                <td><%=item.subjectName%></td>
+                <td><a href="/editClass/<%= item.id %>">Edit</a></td>
+                <td><a href="/viewClass/<%= item.id %>">View</a></td>
+                <td><a href="/deleteClass/<%= item.id %>" onclick="return confirm('Are you Sure?');">Delete</a></td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </div>
+</table>
 </section>
 
 <% include ../layout/footer %>
