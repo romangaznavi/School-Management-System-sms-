@@ -29,8 +29,8 @@
                     <td><%=item.gender%></td>
                     <td><%=item.joiningDate%></td>
                     <td><a href="/teacherEdit/<%= item.id %>">Edit</a></td>
-                    <td><a href="/view/<%=item.id%>">View</a></td>
-                    <td><a href="/delete/<%=item.id%>">Delete</a></td>
+                    <td><a href="/viewTeacher/<%=item.id%>">View</a></td>
+                    <td><a href="/deleteTeacher/<%=item.id%>" onclick="return confirm('Are you sure')";>Delete</a></td>
                 </tr>
                 <% }) %>
             </tbody>
