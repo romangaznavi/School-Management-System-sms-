@@ -1,39 +1,39 @@
 <% include ../layout/header %>
 <% include ../layout/top-menu %>
 <% include ../layout/side-menu %>
-        <section class="main">
-        <h4>List of Assignments
-           <span style="float: right; padding-bottom: 10px;"> <a href="/assignmentAdd" class="btn btn-primary">Add Assignment</a></span>
-        </h4>
-        <table class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>Student Name</th>
-                    <th>Subject Assignment</th>
-                    <th>Subject Teacher</th>
-                    <th>Completed Assignments</th>
-                    <th>Incomplete Assignments</th>
-                    <th>Notes</th>
-                    <th colspan="3">Action</th>
-                </tr>
-            </thead>
+    <section class="main">
+    <h4>List of Assignments
+        <span style="float: right; padding-bottom: 10px;"> <a href="/assignmentAdd" class="btn btn-primary">Add Assignment</a></span>
+    </h4>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Subject Assignment</th>
+                <th>Subject Teacher</th>
+                <th>Completed Assignments</th>
+                <th>Incomplete Assignments</th>
+                <th>Notes</th>
+                <th colspan="3">Action</th>
+            </tr>
+        </thead>
 
-            <tbody>
-                <% assignData.forEach((item) => { %>
-                <tr>
-                    <td><%=item.name%></td>
-                    <td><%=item.subjectName%></td>
-                    <td><%=item.fullName%></td>
-                    <td><%=item.completed%></td>
-                    <td><%=item.incomplete%></td>
-                    <td><%=item.notes%></td>
-                    <td><a href="/showAssignment/<%=item.id%>">Edit</a></td>
-                    <td><a href="/assignmentView/<%=item.id%>">View</a></td>
-                    <td><a href="/delete/<%=item.id%>">Delete</a></td>
-                </tr>
-                <% }) %>
-            </tbody>
-        </table>
-    </section>
+        <tbody>
+            <% assignData.forEach((item) => { %>
+            <tr>
+                <td><%=item.name%></td>
+                <td><%=item.subjectName%></td>
+                <td><%=item.fullName%></td>
+                <td><%=item.completed%></td>
+                <td><%=item.incomplete%></td>
+                <td><%=item.notes%></td>
+                <td><a href="/showAssignment/<%=item.id%>">Edit</a></td>
+                <td><a href="/assignmentView/<%=item.id%>">View</a></td>
+                <td><a href="/deleteAssignment/<%=item.id%>" onclick="return confirm('Are you sure?');">Delete</a></td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</section>
 
-    <% include ../layout/footer %>
+<% include ../layout/footer %>
