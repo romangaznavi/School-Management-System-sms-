@@ -6,9 +6,9 @@
     <h4>Subject View
         <span style="float: right; padding-bottom: 10px;"><a href="/subjectList" class="btn btn-primary">Back to List</a></span>
     </h4>
-    <tbody>
     <thead>
             <% subjectViewResult.forEach((item) => { %>
+                <tbody>
         <tr>
             <th>Subject Name</th> <td><%=item.subjectName%></td> </tr>
             <tr><th>Teacher Name</th> <td><%=item.fullName%></td></tr>
