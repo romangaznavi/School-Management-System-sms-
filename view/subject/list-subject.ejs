@@ -2,6 +2,7 @@
 <% include ../layout/top-menu %>
 <% include ../layout/side-menu %>
 <section class="main">
+        <% include ../layout/menu %>
         <h4 style="text-align: center;">List of Subjects</h4>
         <a href="/teacherAdd" class="btn btn-primary">Add Subject</a>
         <table class="table table-striped table-bordered">
@@ -30,7 +31,27 @@
                 </tr>
                 <% }) %>
             </tbody>
-        </div>
+           
 </table>
+    <nav aria-label="Page navigation example">
+            <ul class="pagination"> 
+                    <% for( let i =1 ; i<= totalPage; i++) {%>
+                        <% if (i == 1) { %> 
+                            <li class="page-item">
+                                    <a class="page-link" href="/subjectList?page=<%=i%>">First</a>
+                            </li>    
+                        <% }%>
+                        <li class="page-item">
+                            <a class="page-link" href="/subjectList?page=<%=i%>"><%=i%></a>
+                        </li>
+
+                        <% if (i == totalPage) { %> 
+                            <li class="page-item">
+                                    <a class="page-link" href="/subjectList?page=<%=i%>">Last</a>
+                            </li>    
+                        <% }%>
+                    <% }%>
+            </ul>
+          </nav>
 </section>
 <% include ../layout/footer %>

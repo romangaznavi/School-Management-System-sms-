@@ -197,6 +197,16 @@ function updateStudent(data, value){
     });
 }
 
+// Delete Student
+
+app.get('/deleteStudent/:id', (req, res) =>{
+    con.query("DELETE FROM student WHERE id = ? ", req.params.id, (err,result) => {
+        if(err){
+            res.send(err);
+        }
+        res.redirect("/");
+    });
+});
 
 // ====================== Teacher Data ==========================//
 
@@ -244,6 +254,7 @@ function addTeacherData(data){
 // LIST TEACHER
 app.get('/teacherList', (req, res) => {
     con.query(`SELECT 
+                t.id,
                 t.fullName,
                 c.className,
                 t.dob,
@@ -285,6 +296,35 @@ function editTeacher(){
                         `)
     });
 }
+
+// View Teacher
+app.get('/viewTeacher/:id', (req, res) => {
+    con.query(`SELECT 
+                    t.id,
+                    t.fullName, 
+                    c.className,
+                    t.dob,
+                    t.gender,
+                    t.joiningDate
+                FROM teacher AS t
+                LEFT JOIN class AS c ON c.id=t.classId
+                WHERE t.id = ?`, req.params.id, (err, result)=>{
+                    if(err){
+                        res.send(err);
+                    }
+                    res.render("teacher/teacher-view", {viewTeacherdata: result});
+        });
+});
+
+// Delete Teacher
+app.get('/deleteTeacher/:id', (req, res) => {
+    con.query("DELETE FROM teacher WHERE id = ? ", req.params.id, (err, result) => {
+        if(err){
+            res.send(err);
+        }
+        res.redirect("/teacherList");
+    });
+});
 
 // ========================= Subject ============================//
 // Add using async await
@@ -574,6 +614,37 @@ app.post('/updateAssignment/:id', async(req, res) => {
     }
 });
 
+app.get('/assignmentView/:id', (req, res) => {
+    con.query(`SELECT 
+                a.id,
+                s.name,
+                sub.subjectName,
+                t.fullName,
+                a.completed,
+                a.incomplete,
+                a.notes
+            FROM assignment AS a
+            LEFT JOIN student AS s ON s.id = a.studentId
+            LEFT JOIN subject AS sub ON sub.id = a.assignmentSubject
+            LEFT JOIN teacher AS t ON t.id = a.assignmentTeacher
+            WHERE a.id = ? `, req.params.id, (err, result) =>{
+                if(err){
+                    res.send(err);
+                }
+                res.render("assignment/view-assignment", {viewAssignmentData: result}); 
+            })
+})
+
+// Delete Assignment
+
+app.get('/deleteAssignment/:id', (req, res) =>{
+    con.query("DELETE FROM assignment WHERE id = ? ", req.params.id, (err,result) => {
+        if(err){
+            res.send(err);
+        }
+        res.redirect("/assignmentList");
+    });
+});
 // =========================== CLASS ===========================
 // Add Class Info for Dropdowns
 app.get('/classInfo', async(req, res) => {
@@ -706,6 +777,17 @@ app.get('/viewClass/:id', (req, res) => {
                 }
                 res.render("class/view-class", {classViewData: result});
             });
+});
+
+// Delete Class
+
+app.get('/deleteClass/:id', (req, res) =>{
+    con.query("DELETE FROM class WHERE id = ? ", req.params.id, (err,result) => {
+        if(err){
+            res.send(err);
+        }
+        res.redirect("/listClas");
+    });
 });
 
 // =========================== STAFF ===========================
