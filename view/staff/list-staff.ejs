@@ -3,7 +3,6 @@
 <% include ../layout/side-menu %>
 
 <section class="main">
-    
         <h4>List of Staff
             <a href="/staffAdd" class="btn btn-primary">Add Staff</a>
         </h4>
@@ -38,6 +37,31 @@
                 <% }) %>
             </tbody>
         </div>
+        </table>
+
+        <nav aria-label="page navigation example">
+            <ul class="pagination">
+                <% for(var i=1; i<=totalPages; i++) { %>
+                    <% if(i==1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/stafflist?page=<%=i%>">First</a>
+                        </li>
+                        <% } %>
+                        <li class="page-item">
+                            <a class="page-link" href="/stafflist?page=<%=i%>"><%=i%></a>
+                        </li>
+                        <% if(i==totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/staffList?page=<%=i%>">Last</a>
+                        </li>
+                        <% } %>
+                <% } %>
+            </ul>
+            <div style="position: unset; margin-top: -43px; margin-right: 4px; color: lightblue;" class="float-right">
+                    Total Records: <%=allStaffData%>
+            </div>
+        </nav>
         
+
     </section>
     <% include ../layout/footer %>

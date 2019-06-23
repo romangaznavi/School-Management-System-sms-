@@ -2,9 +2,11 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 9090;
 const path = require('path');
+const Joi = require('joi');
 const bodyParser = require('body-parser');
 const con = require('./config');
-
+const recPerPage = 3;
+const week = ["Saturday", "Sunday","Monday", "Tuesday", "Wednesday", "Thursday","Friday"];
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
@@ -15,26 +17,52 @@ app.set('/views', '/view');
 
 // ====================== Student Data ========================//
 // Student List
-app.get('/', function(req, res, next) {
+app.get('/', async function (req, res, next) {
+    let page = req.query.page || 1;
+    let offset = (recPerPage*page) - recPerPage;
+    let totalStudent = await countStudent();
+    let totalPage = Math.ceil(totalStudent/recPerPage);
+    // console.log(totalPage);return;
+    let students = await getAllStudents(offset);
+    res.render("student/student-list", {totalPageData: totalPage, totalStudent, students});
+});
+
+function getAllStudents(offsetData){
+    return new Promise((resolve, reject) => {
     con.query(`SELECT 
                     s.id,
                     s.name, 
                     c.className,
                     s.gender,
                     s.fatherName,
-                    s.motherName,
+                    s.motherName, 
                     s.fatherMobile,
                     s.motherMobile,
                     s.address,
                     s.note
                 FROM student AS s
-                LEFT JOIN class AS c ON c.id = s.classId`, (err, result) => {
+                LEFT JOIN class AS c ON c.id = s.classId LIMIT ${recPerPage} OFFSET ${offsetData} `, (err, result) => {
                 if(err){
-                    res.send(err);
+                    reject(err);
                 }
-                    res.render("student/student-list", {studentList: result});
+                resolve(result);
         });
-});
+    })
+}
+
+// For pagination use
+function countStudent(){
+    return new Promise ((resolve, reject) =>{
+        con.query("SELECT COUNT(*) AS totalStudent FROM student", (err, result) =>{
+            if(err){
+                reject(err);
+            }
+            // totalStudent came from query alias
+            resolve(result[0].totalStudent);
+        });
+    });
+}
+
 
 function getClasses()
 {
@@ -270,23 +298,47 @@ app.get('/teacherList', (req, res) => {
 });
 
 // Update Get
-app.get('/teacherEdit/:id', (req, res) =>{
-    con.query(`SELECT 
-                    t.id,
-                    t.fullName,
-                    c.className,
-                    t.dob,
-                    t.gender,
-                    t.joiningDate
-                FROM teacher AS t
-                LEFT JOIN class AS c ON c.id=t.classId
-                WHERE t.id = ? `, req.params.id, (err, result) => {
-                    if(err){
-                        res.send(err);
-                    }
-                    res.render("teacher/teacher-edit", {teacherEditResult: result});
-                });
+app.get('/getTeacherById/:id', async(req, res) =>{
+    try {
+        let teacher = await getTeacherById(req.params);
+        let allClass = await getAllClassData();
+        res.render("teacher/teacher-edit", {allClassData: allClass, singleTeacher: teacher[0]});
+    } catch (error) {
+        res.send(error);
+    }
 });
+
+function getTeacherById(classID){
+    return new Promise((resolve, reject) => {
+        con.query(`SELECT 
+                t.id,
+                t.fullName,
+                c.className,
+                t.dob,
+                t.gender,
+                t.joiningDate
+            FROM teacher AS t
+            LEFT JOIN class AS c ON c.id=t.classId
+            WHERE t.id = ? `, classID.id, (err, result) => {
+                if(err){
+                    reject(err);
+                }
+                resolve(result);
+            });
+        });    
+}
+
+function getAllClassData(){
+    return new Promise((resolve, reject) => {
+        con.query("SELECT * FROM class", (err, result) => {
+            if(err) {
+                reject(err);
+            }
+            resolve(result);
+        });
+    });
+}
+
 
 function editTeacher(){
     return new Promise((resolve, reject) => {
@@ -329,15 +381,15 @@ app.get('/deleteTeacher/:id', (req, res) => {
 // ========================= Subject ============================//
 // Add using async await
 
-app.post('/subjectAdd', async(req, res) => {
-    let subjects = await insertSubject(req.body);
+app.post('/subjectAdd',async(req, res) => {
     try {
+        let subjects = await insertSubject(req.body);
         res.redirect("subjectList");
     } catch (error) {
-        res.send(error);
+        req.validationErrors(true);
+        // res.send(error);
     }
 });
-
 
 function insertSubject(data){
     return new Promise((resolve, reject) => {
@@ -372,47 +424,99 @@ function getTeacherData(){
     });
 }
 
-// LIST SUBJECT
-app.get('/subjectList', (req, res) => {
+// LIST SUBJECT and Pagination
+app.get('/subjectList', async (req, res) => {
+    try {
+        // if query param with id "page" does not exist in URL then set it as "1" 
+        let page= req.query.page || 1;
+        let countSubject = await countAllStudent();
+        
+        let offset = (recPerPage*page)-recPerPage;
+        let subjects = await getSubjects(offset);
+        let totalPage = Math.ceil(countSubject/recPerPage);
+        res.render("subject/list-subject", {subListData: subjects, totalPage, countSubject, page});    
+    } catch (error) {
+        
+    }
+});
+
+function getSubjects(offset) {
+    return new Promise((resolve, reject) => {
+            con.query(`SELECT 
+            s.id,
+            s.subjectName,
+            t.fullName,
+            s.subjectTeachingDay,
+            s.startTime,
+            s.endTime
+        FROM subject AS s
+        LEFT JOIN teacher AS t ON t.id = s.teacherId LIMIT ${recPerPage} OFFSET ${offset}`, (err, result) => {
+            if(err){
+                reject(err);
+            }
+            resolve(result)
+        });
+    });
+}
+function countAllStudent() {
+    return new Promise((resolve, reject) => {
+        // in count[0].total, total came from the below query alias
+        con.query("SELECT COUNT(*) as total FROM subject",(err, count) =>{
+            if (err) {
+                reject(err);
+            }
+            resolve(count[0].total)
+        });
+    });
+}
+
+// Update
+app.get('/getSubjectData/:id', async(req, res) => {
+    const teachers =  await getTeachers();
+    const subjects = await getSubjectById(req.params.id);
+    // res.send(subjects[1]);
+    // return;
+    res.render("subject/edit-subject", {teachersData: teachers, subjectsData: subjects[0],weekDays:week});
+});
+
+function getTeachers(){
+    return new Promise((resolve, reject) => {
+        con.query("SELECT * FROM teacher", (err, result) =>{
+            if(err) {
+                reject(err);
+            }
+            resolve(result);
+        });
+    });
+}
+
+function getSubjectById(subjectId){
+    // console.log(subjectId,'------>subjectId');
+    return new Promise((resolve, reject) => {
     con.query(`SELECT 
                 s.id,
                 s.subjectName,
+                s.teacherId,
                 t.fullName,
                 s.subjectTeachingDay,
                 s.startTime,
                 s.endTime
             FROM subject AS s
-            LEFT JOIN teacher AS t ON t.id = s.teacherId`, (err, result) => {
+            LEFT JOIN teacher AS t ON t.id=s.teacherId
+            WHERE s.id = ${subjectId}`, (err, result) => {
                 if(err){
-                    res.send(err);
+                    reject(err);
                 }
-                    res.render("subject/list-subject", {subListData: result});
+                resolve(result);
             });
-});
+        });
+}
 
-// Update
-app.get('/getSubjectData/:id', (req, res) => {
-    con.query(`SELECT 
-                    s.id,
-                    s.subjectName,
-                    t.fullName,
-                    s.subjectTeachingDay,
-                    s.startTime,
-                    s.endTime
-                FROM subject AS s
-                LEFT JOIN teacher AS t ON t.id=s.teacherId
-                WHERE s.id = ?`, req.params.id, (err, result) => {
-                    if(err){
-                        res.send(err);
-                    }
-                    res.render("subject/edit-subject", {subjectEditResult: result});
-                });
-});
 
 app.post('/updateSubject/:id', async(req, res) => {
     try {
         let subjects = await updateSubject(req.body, req.params);
-        res.redirect("subjectList");
+        res.redirect("/subjectList");
     } catch (error) {
         res.send(error);
     }
@@ -425,8 +529,8 @@ function updateSubject(data, value) {
                         subjectName =           '${data.sname}',
                         teacherId=              ${data.teacherName},
                         subjectTeachingDay=     '${data.tDay}',
-                        startTime=              ${data.sTime},
-                        endTime=                ${data.eTime}
+                        startTime=              '${data.sTime}',
+                        endTime=                '${data.eTime}'
                     WHERE id =                  ${value.id}`, (err, subjectData) => {
                         if(err){
                             reject(err);
@@ -807,14 +911,48 @@ app.post('/insertStaff', (req, res) => {
 });
 
 // LIST STAFF
-app.get('/stafflist', (req, res) => {
-    con.query("SELECT * FROM staff", (err, result) => {
-        if(err){
-            res.send(err);
-        }
-            res.render("staff/list-staff", {staffData: result});
-    });
+app.get('/stafflist', async(req, res) => {
+    try {
+        const page = req.query.page || 1;
+        const allStaff = await countAllStaff();
+        const offset = (recPerPage * page) - recPerPage;
+        let staffs = await getStaff(offset);
+        const totalPage = Math.ceil(allStaff/recPerPage);
+        res.render("staff/list-staff", {allStaffData: allStaff, staffData: staffs, pageNo: page, totalPages: totalPage});
+    } catch (error) {
+        reject(error);
+    }
 });
+function getStaff(offset){
+    return new Promise((resolve, reject) => {
+        con.query(`SELECT
+                        s.id,
+                        s.fullName,
+                        s.designation,
+                        s.mobile,
+                        s.address,
+                        s.joiningDate,
+                        s.salary
+                    FROM staff AS s
+                    LIMIT ${recPerPage} OFFSET ${offset}`, function (err, result) {
+                        if(err){
+                            reject(err);
+                        }               
+                        resolve(result);         
+                    });
+    });
+}
+
+function countAllStaff(){
+    return new Promise((resolve, reject) => {
+        con.query("SELECT COUNT(*) AS totalStaff FROM staff", (err, staffCount) => {
+            if(err){
+                reject(err);
+            }
+            resolve(staffCount[0].totalStaff);
+        });
+    });
+}
 
 //  Update
 app.get('/editStaff/:id', (req, res) => {

@@ -23,7 +23,7 @@
         </thead>
 
         <tbody>
-            <% studentList.forEach((item) => { %>
+            <% students.forEach((item) => { %>
             <tr>
                 <td><%=item.name%></td>
                 <td><%=item.className%></td>
@@ -41,5 +41,24 @@
             <% }) %>
         </tbody>
         </table>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination"> 
+                <% for(var i=1; i<=totalPageData; i++) {%> 
+                    <% if(i==1) { %>
+                <li class="page-item">
+                        <a class="page-link" href="/?page=<%=i%>">First</a>
+                </li>
+                <% } %>
+                <li class="page-item">
+                    <a href="/?page=<%=i%>" class="page-link"><%=i%></a>
+                </li>
+                <% if(i==totalPageData) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="/page?<%=i%>">Last</a>
+                    </li>
+                    <% } %>
+                <% } %>
+            </ul>
+          </nav>
 </section>
 <% include ../layout/footer%>

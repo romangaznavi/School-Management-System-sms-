@@ -29,7 +29,7 @@
                     <td><a href="/subjectView/<%=item.id%>">View</a></td>
                     <td><a href="/deleteSubject/<%=item.id%>" onclick="return confirm('Are you sure?');">Delete</a></td>
                 </tr>
-                <% }) %>
+                <% }); %>
             </tbody>
            
 </table>
@@ -37,7 +37,8 @@
             <ul class="pagination"> 
                     <% for( let i =1 ; i<= totalPage; i++) {%>
                         <% if (i == 1) { %> 
-                            <li class="page-item">
+                            <li class="page-item"> 
+                                
                                     <a class="page-link" href="/subjectList?page=<%=i%>">First</a>
                             </li>    
                         <% }%>

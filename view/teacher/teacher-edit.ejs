@@ -1,50 +1,47 @@
 <% include ../layout/header %>
-<% include ../layout/top-minu%>
+<% include ../layout/top-menu%>
+<% include ../layout/side-menu%>
 <section class="main">
 <h4>Edit Teacher Here</h4>
-<% teacherEditResult.forEach((item) => { %>
-<form action="/teacherEdit/<%=item.id%>" method="POST" class="form-row">
+<form action="/teacherEdit/<%=singleTeacher.id%>" method="POST" class="form-row">
 
     <div class="form-group col-md-4">
-        <label for=""></label>
-        <input type="text" name="name" value="<%=item.fullName%>" class="form-control">
+        <label for="">Full Name:</label>
+        <input type="text" name="name" value="<%=singleTeacher.fullName%>" class="form-control">
     </div>
 
     <div class="form-group col-md-4">
-        <label for="">Select Class</label>
-        <select name="classN" id="" class="form-control">
-            <option value="<%=item.id%>"><%=item.className%></option>
+        <label for="">Select Class</label> <%=singleTeacher.classId%>
+        <select name="className" id="" class="form-control">
+            <option value="">Select an item</option>
+            <% allClassData.forEach((item) => { %>
+            <% if(item.className==singleTeacher.className) { %>
+                <option value="<%=item.id%>" selected><%=item.className%></option>
+            <% } else { %>
+                <option value="<%=item.id%>"><%=item.className%></option>
+            <% } %>
+            <% }) %>
         </select>
-    </div>
-
-    <div class="form-group col-md-4">
-        <label for="">Gender</label>
-        <input type="text" name="gender" value="<%=item.gender%>" class="form-control">
     </div>
 
     <div class="form-group col-md-4">
         <label for="">Date of Birth</label>
-        <input type="text" name="dob" value="<%=item.dob%>" class="form-control">
+        <input type="text" name="dob" value="<%=singleTeacher.dob%>" class="form-control">
     </div>
 
     <div class="form-group col-md-4">
-        <label for="">Father Name</label>
-        <select name="fatherName" id="" class="form-control">
-            <option value="<%=item.id%>"><%=item.fatherName%></option>
-        </select>
+        <label for="">Gender</label>
+        <input type="text" name="gender" value="<%=singleTeacher.gender%>" class="form-control">
     </div>
 
     <div class="form-group col-md-4">
-        <label for="">Mother Name</label>
-        <select name="motherName" id="" class="form-control">
-            <option value="<%=item.id%>"><%=item.motherName%></option>
-        </select>
+        <label for="">Joining Date</label>
+        <input type="text" name="gender" value="<%=singleTeacher.gender%>" class="form-control">
     </div>
-
+   
     <div class="form-group">
         <input type="submit" name="submit" value="Update Student" class="btn btn-primary">
     </div>
 
 </form>   
-<% }); %>  
 </section>

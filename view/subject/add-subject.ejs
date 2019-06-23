@@ -13,7 +13,7 @@
                 <div class="form-group col-md-6">
                 <label for="province">Select Teacher:</label>
                     <select class="form-control" id="teacherId" name="teacherId">
-                        <option value="default">Select Teacher</option>
+                        <option value="">Select Teacher</option>
                         <% teachersResult.forEach((item) => { %>
                         <option value="<%=item.id%>"><%=item.fullName%></option>
                     <% }); %>
