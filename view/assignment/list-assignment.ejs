@@ -1,9 +1,11 @@
 <% include ../layout/header %>
 <% include ../layout/top-menu %>
 <% include ../layout/side-menu %>
-    <section class="main">
+<section class="main">
     <h4>List of Assignments
-        <span style="float: right; padding-bottom: 10px;"> <a href="/assignmentAdd" class="btn btn-primary">Add Assignment</a></span>
+        <span style="float: right; padding-bottom: 10px;"> 
+            <a href="/assignmentAdd" class="btn btn-primary">Add Assignment</a>
+        </span>
     </h4>
     <table class="table table-striped table-bordered">
         <thead>
@@ -19,7 +21,7 @@
         </thead>
 
         <tbody>
-            <% assignData.forEach((item) => { %>
+            <%assignData.forEach((item) => { %>
             <tr>
                 <td><%=item.name%></td>
                 <td><%=item.subjectName%></td>
@@ -27,13 +29,29 @@
                 <td><%=item.completed%></td>
                 <td><%=item.incomplete%></td>
                 <td><%=item.notes%></td>
-                <td><a href="/showAssignment/<%=item.id%>">Edit</a></td>
+                <td><a href="/editAssignmentById/<%=item.id%>">Edit</a></td>
                 <td><a href="/assignmentView/<%=item.id%>">View</a></td>
                 <td><a href="/deleteAssignment/<%=item.id%>" onclick="return confirm('Are you sure?');">Delete</a></td>
             </tr>
             <% }) %>
         </tbody>
     </table>
+
+    <nav aria-label="navigation">
+        <ul class="pagination">
+            <li class="page-item">
+                <% for(let i=1; i<= totalPages; i++) { %>
+                    <% if(i==1) { %>
+                        <a class="page-link" href="/assignmentList?page=<%=i%>">First</a>
+                    <% } %>
+                        <a class="page-link" href="/assignmentList?page=<%=i%>"><%=i%></a>
+                    <% if(i==totalPages) { %> 
+                        <a class="page-link" href="/assignmentList?page=<%=i%>">Last</a>   
+                    <% } %> 
+                <% } %>
+            </li>
+        </ul>
+    </nav>
 </section>
 
 <% include ../layout/footer %>

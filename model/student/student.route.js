@@ -8,7 +8,7 @@ module.exports = (app, recPerPage) => {
 
     app.post('/insertStudent', student.addStudent);
 
-    app.get('/studentView/:id', student.getStudentById);
+    app.get('/studentView/:id', student.viewStudentById);
 
     app.get('/editStudent/:id', student.editStudent);
 

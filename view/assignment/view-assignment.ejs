@@ -8,16 +8,14 @@
         </h4>
         <table class="table table-striped table-bordered">
             <thead>
-                    <% viewAssignmentData.forEach((item) => { %>
                 <tbody>
                 <tr>
-                    <tr><th>Student</th> <td><%=item.name%></td></tr>
-                    <tr><th>Subject</th> <td><%=item.subjectName%></td></tr>
-                    <tr><th>Teacher</th> <td><%=item.fullName%></td></tr>
-                    <tr><th>Completed</th> <td><%=item.completed%></td></tr>
-                    <tr><th>Incomplete</th> <td><%=item.incomplete%></td></tr>
-                    <tr><th>Notes</th> <td><%=item.notes%></td></tr>
-                    <% }) %>
+                    <tr><th>Student</th> <td><%=viewAssignmentData.name%></td></tr>
+                    <tr><th>Subject</th> <td><%=viewAssignmentData.subjectName%></td></tr>
+                    <tr><th>Teacher</th> <td><%=viewAssignmentData.fullName%></td></tr>
+                    <tr><th>Completed</th> <td><%=viewAssignmentData.completed%></td></tr>
+                    <tr><th>Incomplete</th> <td><%=viewAssignmentData.incomplete%></td></tr>
+                    <tr><th>Notes</th> <td><%=viewAssignmentData.notes%></td></tr>
                 </tr>
                 </tbody>
             </thead>

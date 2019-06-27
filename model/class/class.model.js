@@ -1,6 +1,6 @@
 const con = require("../../config");
-
-
+const classData = ["First", "Second", "Third", "Fourth", "Fifth", "Sixth"]; 
+ 
 module.exports.classData = async(req, res) => {
     try {
         let teachers  = await getTeacherData();
@@ -50,8 +50,17 @@ function addClass(data){
     });
 }
 
-module.exports.listClass = (req, res) => {
-    con.query(`SELECT 
+module.exports.listClass = async(req, res) => {
+    try {
+        let classListdata = await classList();
+        res.render("class/list-class", {classResult: classListdata});
+    } catch (error) {
+        res.send(error);
+    }
+}
+function classList(){
+    return new Promise((resolve, reject) => {
+        con.query(`SELECT 
                     c.id,
                     c.className,
                     t.fullName,
@@ -60,14 +69,26 @@ module.exports.listClass = (req, res) => {
                 LEFT JOIN teacher AS t ON t.id = c.teacherId
                 LEFT JOIN subject AS s ON s.id = c.subjectId`, (err, result) => {
                     if(err){
-                        res.send(err);
+                        reject(err);
                     }
-                        res.render("class/list-class", {classResult: result});
+                    resolve(result);    
                 });
+    });
 }
 
-module.exports.editClassById = (req, res) => {
-    con.query(`SELECT 
+module.exports.editClassById = async(req, res) => {
+    try {
+        let classEdit = await editClass(req.params);
+        let teachers = await getTeacherData();
+        let subjects = await getSubjectData();
+        res.render("class/edit-class", {classInfoResult: classEdit[0], classData, teachers, subjects});
+    } catch (error) {
+        res.send(error); 
+    }
+}
+function editClass(reqParams){
+    return new Promise((resolve, reject) => {
+        con.query(`SELECT 
                 c.id,
                 c.className,
                 t.fullName,
@@ -75,12 +96,13 @@ module.exports.editClassById = (req, res) => {
             FROM class AS c
             LEFT JOIN teacher AS t ON t.id = c.teacherId
             LEFT JOIN subject AS s ON s.id = c.subjectId 
-            WHERE c.id = ?`, req.params.id, (err, result) => {
+            WHERE c.id = ?`, reqParams.id, (err, result) => {
         if(err){
-            res.send(err);
+            reject(err);
         }
-        res.render("class/edit-class", {classInfoResult: result});
+        resolve(result);
     });
+    })
 }
 
 module.exports.updateClass = async(req, res) => {

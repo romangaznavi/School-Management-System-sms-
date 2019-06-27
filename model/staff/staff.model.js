@@ -1,6 +1,6 @@
 const con = require("../../config");
-
-
+const recPerPage = 3;
+ 
 module.exports.staffAddForm = (req, res) => {  
     res.render("staff/add-staff");
 }
@@ -16,14 +16,14 @@ module.exports.insertStaff = (req, res) => {
  
 module.exports.staffList = async(req, res) => {
     try {
-        const page = req.query.page || 1;
-        const allStaff = await countAllStaff();
-        const offset = (recPerPage * page) - recPerPage;
+        let page = req.query.page || 1;
+        let allStaff = await countAllStaff();
+        let offset = (recPerPage * page) - recPerPage;
         let staffs = await getStaff(offset);
-        const totalPage = Math.ceil(allStaff/recPerPage);
+        let totalPage = Math.ceil(allStaff/recPerPage);
         res.render("staff/list-staff", {allStaffData: allStaff, staffData: staffs, pageNo: page, totalPages: totalPage});
     } catch (error) {
-        reject(error);
+        console.log(error);
     }
 }
 function getStaff(offset){
@@ -55,14 +55,24 @@ function countAllStaff(){
             resolve(staffCount[0].totalStaff);
         });
     });
-}
+} 
 
-module.exports.editStaffById = (req, res) => {
-    con.query("SELECT * FROM staff WHERE id = ?", req.params.id, (err, result) => {
-        if(err){
-            res.send(err);
-        }
-            res.render("staff/edit-staff", {staffEdit: result});
+module.exports.editStaffById = async(req, res) => {
+    try {
+        let staffEdit = await editStaff(req.params)
+        res.render("staff/edit-staff", {staffEdit: staffEdit});
+    } catch (error) {
+        
+    }
+}
+function editStaff(reqParams){
+    return new Promise((resolve, reject) => {
+        con.query("SELECT * FROM staff WHERE id = ?", reqParams.id, (err, result) => {
+            if(err){
+                reject(err);
+            }
+            resolve(result);                
+        });
     });
 }
 

@@ -1,5 +1,5 @@
 const con = require("../../config");
-
+const recPerPage = 3;
 
 module.exports.addClass =  async (req, res) =>{
     try {
@@ -7,7 +7,7 @@ module.exports.addClass =  async (req, res) =>{
         res.render("teacher/teacher-add", {classResult: classes});
     } catch (error) {
         res.send(error);
-    }
+    } 
 }
 function getClassData(){
     return new Promise((resolve, reject) =>{
@@ -40,8 +40,21 @@ function addTeacherData(data){
     });
 }
 
-module.exports.listTeacher = (req, res) => {
-    con.query(`SELECT 
+module.exports.listTeacher = async(req, res) => {
+    try {
+        let countAllTeachers = await countTeachers();
+        let pages = req.query.page || 1;
+        let offset = (recPerPage*pages)-recPerPage;
+        let allTeachers = await allTeacherList(offset);
+        let totalPages = Math.ceil(countAllTeachers/recPerPage);
+        res.render("teacher/teacher-list", {teacherListData: allTeachers, pages, totalPages, countAllTeachers});
+    } catch (error) {
+        console.log(error);
+    }
+}
+function allTeacherList(offset){
+    return new Promise((resolve, reject) =>{
+        con.query(`SELECT 
                 t.id,
                 t.fullName,
                 c.className,
@@ -49,12 +62,23 @@ module.exports.listTeacher = (req, res) => {
                 t.gender,
                 t.joiningDate
                 FROM teacher AS t
-                LEFT JOIN class AS c ON c.id = t.classId`, (err, result) => {
+                LEFT JOIN class AS c ON c.id = t.classId LIMIT ${recPerPage} OFFSET ${offset}`, (err, result) => {
                     if(err){
-                        res.send(err);
+                        reject(err);
                     }
-                        res.render("teacher/teacher-list", {teacherListData: result});
+                    resolve(result);    
                 });
+    });
+}
+function countTeachers(){
+    return new Promise((resolve, reject) => {
+        con.query("SELECT COUNT(*) AS totalTeachers FROM teacher", (err, result) => {
+            if(err){
+                reject(err);
+            }
+            resolve(result[0].totalTeachers);
+        });
+    });
 }
 
 module.exports.editTeacherById = async(req, res) =>{

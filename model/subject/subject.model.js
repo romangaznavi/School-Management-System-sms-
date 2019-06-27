@@ -2,8 +2,6 @@ const recPerPage = 3;
 const con = require("../../config");
 const week = ["Saturday", "Sunday","Monday", "Tuesday", "Wednesday", "Thursday","Friday"];
 
-
-// Add Subject
 module.exports.addSubject = async(req, res) => {
     try {
         let subjects = await insertSubject(req.body);
@@ -25,8 +23,6 @@ function insertSubject(data){
     });
 }
 
-
-// get teacher (Form)
 module.exports.getTeacher = async(req, res) => {
     try {
         let teachers = await getTeacherData();
@@ -46,20 +42,17 @@ function getTeacherData(){
     });
 }
 
-
-// list
 module.exports.subjectList = async (req, res) => {
     try {
         // if query param with id "page" does not exist in URL then set it as "1" 
         let page= req.query.page || 1;
         let countSubject = await countAllStudent();
-        
         let offset = (recPerPage*page)-recPerPage;
         let subjects = await getSubjects(offset);
         let totalPage = Math.ceil(countSubject/recPerPage);
         res.render("subject/list-subject", {subListData: subjects, totalPage, countSubject, page});    
     } catch (error) {
-        
+        res.send(error);
     }
 }
 function getSubjects(offset) {
@@ -76,7 +69,7 @@ function getSubjects(offset) {
             if(err){
                 reject(err);
             }
-            resolve(result)
+            resolve(result);
         });
     });
 }
@@ -92,8 +85,6 @@ function countAllStudent() {
     });
 }
 
-
-// Update
 module.exports.updateSubject = async(req, res) => {
     const teachers =  await getTeachers();
     const subjects = await getSubjectById(req.params.id);
@@ -134,8 +125,6 @@ function getSubjectById(subjectId){
         });
 }
 
-
-// Post update data
 module.exports.subjectUpdate = async(req, res) => {
     try {
         let subjects = await updateSubject(req.body, req.params);

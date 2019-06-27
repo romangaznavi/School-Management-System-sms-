@@ -4,7 +4,7 @@
 <section class="main">
     <h4>Update subjects</h4>
     <a href="/asdf">E Subject</a>
-            <form action="/updateSubject/<%= subjectsData.id%>" method="POST" class="form-row">
+            <form action="/updateSubject/<%=subjectsData.id%>" method="POST" class="form-row">
                 <div class="form-group col-md-6">
                     <label for="sname">Name of subject </label>
                     <input type="text" name="sname" value="<%=subjectsData.subjectName%>" class="form-control">
@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="form-group col-md-6">
-                    <input type="submit" value="Add subject" class="btn btn-primary">
+                    <input type="submit" value="Update subject" class="btn btn-primary">
                     <a href="/subjectList" class="btn btn-primary">List subject</a>
                 </div>
             </form>

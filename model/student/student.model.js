@@ -1,4 +1,4 @@
-'use strict'
+'use strict' 
 const recPerPage = 3;
 const con = require("../../config");
 module.exports.list = async function (req, res, next) {
@@ -6,7 +6,6 @@ module.exports.list = async function (req, res, next) {
     let offset = (recPerPage*page) - recPerPage;
     let totalStudent = await countStudent();
     let totalPage = Math.ceil(totalStudent/recPerPage);
-    // console.log(totalPage);return;
     let students = await getAllStudents(offset);
     res.render("student/student-list", {totalPageData: totalPage, totalStudent, students});
 }
@@ -40,11 +39,8 @@ function insertStudent(data){
             }
             resolve(result);
         });
-    })
+    });
 }
-
-
-// Update Student
 
 module.exports.studentUpdate = async(req, res) => {
     let students = await updateStudent(req.body, req.params);
@@ -99,20 +95,6 @@ function getAllStudents(offsetData){
     })
 }
 
-// For pagination use
-function countStudent(){
-    return new Promise ((resolve, reject) =>{
-        con.query("SELECT COUNT(*) AS totalStudent FROM student", (err, result) =>{
-            if(err){
-                reject(err);
-            }
-            // totalStudent came from query alias
-            resolve(result[0].totalStudent);
-        });
-    });
-}
-
-
 function getClasses()
 {
     return new Promise((resolve, reject) => {
@@ -126,7 +108,20 @@ function getClasses()
     });
 }
 
-module.exports.getStudentById = (req, res) => {
+// For pagination use
+function countStudent(){
+    return new Promise ((resolve, reject) =>{
+        con.query("SELECT COUNT(*) AS totalStudent FROM student", (err, result) =>{
+            if(err){
+                reject(err);
+            }
+            // totalStudent came from query alias
+            resolve(result[0].totalStudent);
+        });
+    });
+}
+
+module.exports.viewStudentById = (req, res) => {
     con.query(`SELECT 
                 s.id,
                 s.name, 
@@ -148,8 +143,19 @@ module.exports.getStudentById = (req, res) => {
             });
 }
 
-module.exports.editStudent = (req, res) => {
-    con.query(`SELECT 
+module.exports.editStudent = async (req, res) => {
+    try {
+        let studentsEditData = await editStudentById(req.params.id);
+        let classes = await getClasses();
+        res.render("student/edit-student", {studentData: studentsEditData[0], classResult: classes});
+    } catch (error) {
+        res.send(err);
+    }
+}
+
+function editStudentById(reqParamsId){
+    return new Promise((resolve, reject) => {
+        con.query(`SELECT 
                 s.id,
                 s.name, 
                 c.className,
@@ -162,12 +168,13 @@ module.exports.editStudent = (req, res) => {
                 s.note
             FROM student AS s
             LEFT JOIN class AS c ON c.id = s.classId
-            WHERE s.id= ? `, req.params.id, (err, result) => {
+            WHERE s.id= ? `, reqParamsId, (err, result) => {
             if(err){
-                res.send(err);
+                reject(err);
             }
-                res.render("student/edit-student", {studentData: result});
+            resolve(result);
         });
+    });
 }
 
 module.exports.deleteStudent = (req, res) =>{
@@ -176,51 +183,5 @@ module.exports.deleteStudent = (req, res) =>{
             res.send(err);
         }
         res.redirect("/");
-    });
-}
-
-module.exports.studentList = async function (req, res, next) {
-    let page = req.query.page || 1;
-    let offset = (recPerPage*page) - recPerPage;
-    let totalStudent = await countStudent();
-    let totalPage = Math.ceil(totalStudent/recPerPage);
-    // console.log(totalPage);return;
-    let students = await getAllStudents(offset);
-    res.render("student/student-list", {totalPageData: totalPage, totalStudent, students});
-}
-
-function getAllStudents(offsetData){
-    return new Promise((resolve, reject) => {
-    con.query(`SELECT 
-                    s.id,
-                    s.name, 
-                    c.className,
-                    s.gender,
-                    s.fatherName,
-                    s.motherName, 
-                    s.fatherMobile,
-                    s.motherMobile,
-                    s.address,
-                    s.note
-                FROM student AS s
-                LEFT JOIN class AS c ON c.id = s.classId LIMIT ${recPerPage} OFFSET ${offsetData} `, (err, result) => {
-                if(err){
-                    reject(err);
-                }
-                resolve(result);
-        });
-    })
-}
-
-// For pagination use
-function countStudent(){
-    return new Promise ((resolve, reject) =>{
-        con.query("SELECT COUNT(*) AS totalStudent FROM student", (err, result) =>{
-            if(err){
-                reject(err);
-            }
-            // totalStudent came from query alias
-            resolve(result[0].totalStudent);
-        });
     });
 }
