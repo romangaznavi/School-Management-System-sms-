@@ -2,14 +2,14 @@
 <% include ../layout/top-menu %>
 <% include ../layout/side-menu %>
 <section class="main">
-            <h1>Add Student Here</h1>
-            <form action="/insertStudent" method="POST">
-                <div class="form-group">
+            <h4>Add Student Here</h4> 
+            <form action="/insertStudent" method="POST" class="form-row">
+                <div class="form-group col-md-4">
                     <label for="sname">Student Name</label>
                     <input type="text" name="sname" class="form-control" placeholder="Name">
                 </div>
     
-                <div class="form-group">
+                <div class="form-group col-md-4">
                     <label for="class">Student Class </label>
                     <select name="classId" id="classId" class="form-control">
                         <option value="">Select Class</option>
@@ -19,7 +19,7 @@
                     </select>
                 </div>
     
-                <div class="form-group">
+                <div class="form-group col-md-4">
                     <label for="gender">Select Gender</label>
                     <select name="gender" id="gender" class="form-control">
                         <option value="">Select gender</option>

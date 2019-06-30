@@ -42,27 +42,48 @@ function addTeacherData(data){
 
 module.exports.listTeacher = async(req, res) => {
     try {
-        let countAllTeachers = await countTeachers();
+        let countAllTeachers = await countTeachers(req);
         let pages = req.query.page || 1;
         let offset = (recPerPage*pages)-recPerPage;
-        let allTeachers = await allTeacherList(offset);
+        let allTeachers = await allTeacherList(offset, req);
         let totalPages = Math.ceil(countAllTeachers/recPerPage);
         res.render("teacher/teacher-list", {teacherListData: allTeachers, pages, totalPages, countAllTeachers});
     } catch (error) {
         console.log(error);
     }
 }
-function allTeacherList(offset){
+function allTeacherList(offset, formData){
+    let condition = "1";
+    let fullName = formData.query.name;
+    let className = formData.query.className;
+    let joiningDate = formData.query.JoiningDate;
+    
+    if(fullName) {
+        condition += ` AND fullName LIKE "%${fullName}%"`;
+    }
+    if(className) {
+        condition += ` AND className LIKE "%${className}%"`;
+    }
+    if(joiningDate) {
+        condition += ` AND JoiningDate LIKE "%${joiningDate}%"`;
+    }
+    
     return new Promise((resolve, reject) =>{
-        con.query(`SELECT 
-                t.id,
-                t.fullName,
-                c.className,
-                t.dob,
-                t.gender,
-                t.joiningDate
-                FROM teacher AS t
-                LEFT JOIN class AS c ON c.id = t.classId LIMIT ${recPerPage} OFFSET ${offset}`, (err, result) => {
+        let teachQuery = `SELECT 
+                        t.id,
+                        t.fullName,
+                        c.className,
+                        t.dob,
+                        t.gender,
+                        t.joiningDate
+                    FROM teacher AS t
+                    LEFT JOIN class AS c ON c.id = t.classId 
+                    WHERE ${condition}
+                    LIMIT ${recPerPage} OFFSET ${offset}`;
+        console.log("====================>");
+        console.log(teachQuery);
+          
+        con.query(teachQuery, (err, result) => {
                     if(err){
                         reject(err);
                     }
@@ -70,9 +91,32 @@ function allTeacherList(offset){
                 });
     });
 }
-function countTeachers(){
+function countTeachers(formData){
+    let condition = "1";
+    let fullName = formData.query.name;
+    let className = formData.query.className;
+    let joiningDate = formData.query.JoiningDate;
+
+    if(fullName) {
+        condition += ` AND fullName LIKE "%${fullName}%"`;
+    }
+    if(className) {
+        condition += ` AND className LIKE "%${className}%"`;
+    }
+    if(joiningDate) {
+        condition += ` AND JoiningDate LIKE "%${joiningDate}%"`;
+    }
     return new Promise((resolve, reject) => {
-        con.query("SELECT COUNT(*) AS totalTeachers FROM teacher", (err, result) => {
+
+        let teacherQuery = `SELECT COUNT(*) AS totalTeachers 
+                            FROM teacher AS t
+                            LEFT JOIN class AS c ON c.id = t.classId
+                            WHERE ${condition}`;
+
+        console.log("==================>");
+        console.log(teacherQuery);
+
+        con.query(teacherQuery, (err, result) => {
             if(err){
                 reject(err);
             }

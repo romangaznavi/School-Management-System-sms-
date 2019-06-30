@@ -1,5 +1,6 @@
 const con = require("../../config");
 const classData = ["First", "Second", "Third", "Fourth", "Fifth", "Sixth"]; 
+const recPerPage = 3;
  
 module.exports.classData = async(req, res) => {
     try {
@@ -52,27 +53,76 @@ function addClass(data){
 
 module.exports.listClass = async(req, res) => {
     try {
-        let classListdata = await classList();
-        res.render("class/list-class", {classResult: classListdata});
+        let page = req.query.page || 1;
+        let offset = (recPerPage*page) - recPerPage
+        let classListdata = await classList(offset, req);
+        let classCount = await countClass(req);
+        let totalPage = Math.ceil(classCount/recPerPage);
+        res.render("class/list-class", {classResult: classListdata, totalPage, classCount});
     } catch (error) {
-        res.send(error);
+        console.log(error);
     }
 }
-function classList(){
+function classList(offset, formData){
+
+    let condition = "1";
+    let className = formData.query.className;
+    let teacherName = formData.query.teacher;
+
+    if(className) {
+        condition +=  ` AND className LIKE "%${className}%"`;
+    }
+    if(teacherName) {
+        condition +=  ` AND fullName LIKE "%${teacherName}%"`;
+    }
+
     return new Promise((resolve, reject) => {
-        con.query(`SELECT 
-                    c.id,
-                    c.className,
-                    t.fullName,
-                    s.subjectName
-                FROM class AS c
-                LEFT JOIN teacher AS t ON t.id = c.teacherId
-                LEFT JOIN subject AS s ON s.id = c.subjectId`, (err, result) => {
+        let classQuery = `SELECT 
+                            c.id,
+                            c.className,
+                            t.fullName,
+                            s.subjectName
+                        FROM class AS c
+                        LEFT JOIN teacher AS t ON t.id = c.teacherId
+                        LEFT JOIN subject AS s ON s.id = c.subjectId
+                        WHERE ${condition}
+                        LIMIT ${recPerPage} OFFSET ${offset}`;
+        console.log("=======================>");
+        console.log(classQuery);                
+        con.query(classQuery, (err, result) => {
                     if(err){
                         reject(err);
                     }
                     resolve(result);    
                 });
+    });
+} 
+
+function countClass(formData){
+    let condition = "1"; 
+    let className = formData.query.className;
+    let teacherName = formData.query.teacher;
+
+    if(className) {
+        condition +=  ` AND className LIKE "%${className}%"`;
+    }
+    if(teacherName) {
+        condition +=  ` AND fullName LIKE "%${teacherName}%"`;
+    }
+
+    return new Promise((resolve, reject) => {
+        let classQuery = `SELECT COUNT (*) AS total 
+                            FROM class AS c
+                            LEFT JOIN teacher AS t ON t.id = c.teacherId
+                            WHERE ${condition}`;
+        console.log("=======================>");
+        console.log(classQuery);    
+        con.query(classQuery, (err,result) => {
+            if(err){
+                reject(err);
+            }
+            resolve(result[0].total);
+        });
     });
 }
 

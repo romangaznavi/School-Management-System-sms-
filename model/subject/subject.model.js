@@ -46,26 +46,46 @@ module.exports.subjectList = async (req, res) => {
     try {
         // if query param with id "page" does not exist in URL then set it as "1" 
         let page= req.query.page || 1;
-        let countSubject = await countAllStudent();
+        let countSubject = await countAllStudent(req);
         let offset = (recPerPage*page)-recPerPage;
-        let subjects = await getSubjects(offset);
+        let subjects = await getSubjects(offset, req);
         let totalPage = Math.ceil(countSubject/recPerPage);
         res.render("subject/list-subject", {subListData: subjects, totalPage, countSubject, page});    
     } catch (error) {
         res.send(error);
     }
 }
-function getSubjects(offset) {
+function getSubjects(offset, formData) {
+    let condition = "1";
+    let subjectName = formData.query.subject;
+    let teacherName = formData.query.teacherName;
+    let teachingDay = formData.query.teachingDay;
+
+    if(subjectName) {
+        condition += ` AND subjectName LIKE "%${subjectName}%"`;
+    }
+    if(teacherName) {
+        condition += ` AND fullName LIKE "%${teacherName}%"`;
+    }
+    if(teachingDay) {
+        condition += ` AND subjectTeachingDay LIKE "%${teachingDay}%"`;
+    }
+
     return new Promise((resolve, reject) => {
-            con.query(`SELECT 
-            s.id,
-            s.subjectName,
-            t.fullName,
-            s.subjectTeachingDay,
-            s.startTime,
-            s.endTime
-        FROM subject AS s
-        LEFT JOIN teacher AS t ON t.id = s.teacherId LIMIT ${recPerPage} OFFSET ${offset}`, (err, result) => {
+        let queryData = `SELECT 
+                            s.id,
+                            s.subjectName,
+                            t.fullName, 
+                            s.subjectTeachingDay,
+                            s.startTime,
+                            s.endTime
+                        FROM subject AS s
+                        LEFT JOIN teacher AS t ON t.id = s.teacherId
+                        WHERE ${condition} 
+                        LIMIT ${recPerPage} OFFSET ${offset}`;
+            console.log("=======??======??=======>");            
+            console.log(queryData);            
+            con.query(queryData, (err, result) => {
             if(err){
                 reject(err);
             }
@@ -73,10 +93,30 @@ function getSubjects(offset) {
         });
     });
 }
-function countAllStudent() {
+function countAllStudent(formData) {
+    let condition = "1"; 
+    let subjectName = formData.query.subject;
+    let teacherName = formData.query.teacherName;
+    let teachingDay = formData.query.teachingDay;
+
+    if(subjectName){
+        condition += ` AND subjectName LIKE "%${subjectName}%"`;
+    }
+    if(teacherName) {
+        condition += ` AND fullName LIKE "%${teacherName}%"`;
+    }
+    if(teachingDay) {
+        condition += ` AND subjectTeachingDay LIKE "%${teachingDay}%"`;
+    }
+
     return new Promise((resolve, reject) => {
-        // in count[0].total, total came from the below query alias
-        con.query("SELECT COUNT(*) as total FROM subject",(err, count) =>{
+        let queryInfo = `SELECT COUNT(*) as total 
+                            FROM subject As s
+                            LEFT JOIN teacher AS t ON t.id = s.teacherId
+                            WHERE ${condition}`;
+        console.log("===========>");
+        console.log(queryInfo);
+        con.query(queryInfo,(err, count) =>{
             if (err) {
                 reject(err);
             }

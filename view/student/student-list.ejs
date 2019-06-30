@@ -2,14 +2,14 @@
 <% include ../layout/top-menu %>
 <% include ../layout/side-menu%>
 <section class="main">
-
-<h4 class="title">Student List
-    <a href="/add" class="btn btn-primary float-right">Add New Student</a>
+<% include ../layout/menu %>
+<h4 id="h1Add">Student List
+    <a href="/add" class="btn btn-primary float-right" id="#btn1">Add New Student</a>
 </h4>
 <% if (students.length > 0) {%>
 <table class="table table-striped table-bordered">
-    <form action="/" method="GET">
-        <thead>
+    <form action="/" method="GET" id="searchStudent">
+        <thead> 
             <tr>
                 <th>Name</th>
                 <th>Class</th>
@@ -22,7 +22,7 @@
                     <input type="text" class="form-control form-control-sm" name="name">
                 </th>
                 <th>
-                    <input type="text" class="form-control form-control-sm" name="class">
+                    <input type="text" class="form-control form-control-sm" name="className">
                 </th>
                 <th>
                     <input type="text" class="form-control form-control-sm" name="fname">
@@ -32,8 +32,8 @@
                 </th>    
                 <th>
                     <input type="submit" class="btn btn-success" value="Search" >
-               
-                        <input type="button" class="btn btn-success" value="clear" >
+                    <!-- <input type="button" class="btn btn-success" value="clear" onclick="clearForm()"> -->
+                    <a href="/" class="btn btn-info">clear</a>
                 </th>
                     
             </tr>
@@ -44,7 +44,6 @@
             <tr>
                 <td><%=item.name%></td>
                 <td><%=item.className%></td>
-               
                 <td><%=item.fatherName%></td>
                 <td><%=item.motherName%></td>
                 <td><a href="/editStudent/<%=item.id%>">Edit</a>
@@ -71,7 +70,7 @@
                         <a class="page-link" href="/?page=<%=i%>">Last</a>
                     </li>
                     <% } %>
-                <% } %>
+                <% } %> 
             </ul>
           </nav>
     <% } %>
@@ -79,4 +78,10 @@
         <div class="alert"> No student found</div>
      <%}%>   
 </section>
+<script>
+    function clearForm() {
+        document.getElementById("searchStudent").reset();
+    }
+</script>
 <% include ../layout/footer%>
+

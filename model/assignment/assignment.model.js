@@ -64,30 +64,49 @@ function getTeacher() {
 
 module.exports.assignmentList = async (req, res) => {
     try {
-        let countAssignments = await countAllAssignment();
+        let countAssignments = await countAllAssignment(req); 
         let pages = req.query.page || 1;
         let offset = (recPerPage*pages)-recPerPage;
         let totalPages = Math.ceil(countAssignments/recPerPage);
-        let assignments = await ListAssignment(offset);
+        let assignments = await ListAssignment(offset, req);
         res.render("assignment/list-assignment", {assignData: assignments, totalPages, pages});
     } catch (error) {
         console.log(error);
     }
 }
-function ListAssignment(offset){
+function ListAssignment(offset, formData){
+    let condition = "1";
+    let studentName = formData.query.student;
+    let subjectName = formData.query.subject;
+    let teacherName = formData.query.teacher;
+
+    if(studentName) {
+        condition +=  ` AND name LIKE "%${studentName}%"`;
+    }
+    if(subjectName) {
+        condition +=  ` AND subjectName LIKE "%${subjectName}%"`;
+    }
+    if(teacherName) {
+        condition +=  ` AND fullName LIKE "%${teacherName}%"`;
+    }
     return new Promise((resolve, reject) => {
-        con.query(`SELECT 
-                a.id,
-                s.name,
-                sub.subjectName,
-                t.fullName,
-                a.completed,
-                a.incomplete,
-                a.notes
-            FROM assignment AS a
-            LEFT JOIN student AS s ON s.id=a.studentId
-            LEFT JOIN subject AS sub ON sub.id=a.assignmentSubject
-            LEFT JOIN teacher AS t ON t.id=a.assignmentTeacher LIMIT ${recPerPage} OFFSET ${offset}`, function(err, result){
+        let assignmentQuery = `SELECT 
+                                a.id,
+                                s.name,
+                                sub.subjectName,
+                                t.fullName,
+                                a.completed,
+                                a.incomplete,
+                                a.notes
+                            FROM assignment AS a
+                            LEFT JOIN student AS s ON s.id=a.studentId
+                            LEFT JOIN subject AS sub ON sub.id=a.assignmentSubject
+                            LEFT JOIN teacher AS t ON t.id=a.assignmentTeacher 
+                            WHERE ${condition}
+                            LIMIT ${recPerPage} OFFSET ${offset}`
+        console.log("=================>");
+        console.log(assignmentQuery);  
+        con.query(assignmentQuery, function(err, result){
                 if(err){
                     reject(err);
                 }
@@ -95,9 +114,32 @@ function ListAssignment(offset){
         });
     });
 }
-function countAllAssignment(){
+function countAllAssignment(formData){
+    let condition = "1";
+    let studentName = formData.query.student;
+    let subjectName = formData.query.subject;
+    let teacherName = formData.query.teacher;
+
+    if(studentName) {
+        condition += ` AND name LIKE "%${studentName}%"`;
+    }
+    if(subjectName) {
+        condition +=  ` AND subjectName LIKE "%${subjectName}%"`;
+    }
+    if(teacherName) {
+        condition +=  ` AND fullName LIKE "%${teacherName}%"`;
+    }
+
     return new Promise((resolve, reject) => {
-        con.query("SELECT COUNT(*) AS total FROM assignment", (err, result) => {
+        let assignmentQuery = `SELECT COUNT(*) AS total 
+                                FROM assignment AS a
+                                LEFT JOIN student AS s ON s.id = a.studentId
+                                LEFT JOIN subject AS sub ON sub.id = a.assignmentSubject
+                                LEFT JOIN teacher AS t ON t.id = a.assignmentTeacher
+                                WHERE ${condition}`;
+        console.log("=================>");
+        console.log(assignmentQuery);                        
+        con.query(assignmentQuery, (err, result) => {
             if(err){
                 reject(err);
             }

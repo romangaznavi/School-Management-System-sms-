@@ -3,20 +3,34 @@
 <% include ../layout/side-menu %>
 
 <section class="main">
-        <h4>List of Staff
-            <a href="/staffAdd" class="btn btn-primary">Add Staff</a>
+    <% include ../layout/menu %>
+        <h4 id="h1Add"> List of Staff
+            <a href="/staffAdd" class="btn btn-primary" id="btn1">Add Staff</a>
         </h4>
-        <!-- <a href="/add" class="btn btn-primary">Add Student</a> -->
+        <% if(staffData.length > 0) { %>
+        <form action="/staffList" method="GET" id="clearStaff">
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>
                     <th>Full Name</th>
                     <th> Designation</th>
                     <th>Mobile</th>
-                    <th>Address</th>
-                    <th>Joining Date</th>
-                    <th>Salary</th>
                     <th colspan="3">Action</th>
+                </tr>
+                <tr>
+                    <th>
+                        <input type="text" name="name" class="form-control">
+                    </th>
+                    <th>
+                        <input type="text" name="designation" class="form-control">
+                    </th>
+                    <th>
+                        <input type="text" name="mobile" class="form-control">
+                    </th>
+                    <th>
+                        <input type="submit" name="submit" value="Search" class="btn btn-success">
+                        <input type="button" class="btn btn-success" value="Clear" onclick="clearFormData()">
+                    </th>
                 </tr>
             </thead>
 
@@ -27,17 +41,15 @@
                     <td><%=item.fullName%></td>
                     <td><%=item.designation%></td>
                     <td><%=item.mobile%></td>
-                    <td><%=item.address%></td>
-                    <td><%=item.joiningDate%></td>
-                    <td><%=item.salary%></td>
-                    <td><a href="/editStaff/<%=item.id%>">Edit</a></td>
-                    <td><a href="/staffView/<%= item.id %>">View</a></td>
-                    <td><a href="/deleteStaff/<%= item.id %>" onclick="return confirm('Are you sure?');">Delete</a></td>
+                    <td><a href="/editStaff/<%=item.id%>">Edit</a>/
+                    <a href="/staffView/<%= item.id %>">View</a>/
+                    <a href="/deleteStaff/<%= item.id %>" onclick="return confirm('Are you sure?');">Delete</a></td>
                 </tr>
                 <% }) %>
             </tbody>
         </div>
-        </table> 
+        </table>
+    </form> 
 
         <nav aria-label="page navigation example">
             <ul class="pagination">
@@ -61,7 +73,16 @@
                     Total Records: <%=allStaffData%>
             </div>
         </nav>
-        
-
+        <%}%>
+        <% if(staffData.length ==0) {%>
+            Record not found
+        <% } %>
     </section>
+
+    <script>
+        function clearFormData(){
+            document.getElementById("clearStaff").reset();
+        }
+    </script>
+
     <% include ../layout/footer %>

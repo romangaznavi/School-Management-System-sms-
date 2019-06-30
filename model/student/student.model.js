@@ -4,9 +4,9 @@ const con = require("../../config");
 module.exports.list = async function (req, res, next) {
     let page = req.query.page || 1;
     let offset = (recPerPage*page) - recPerPage;
-    let totalStudent = await countStudent();
+    let totalStudent = await countStudent(req);
     let totalPage = Math.ceil(totalStudent/recPerPage);
-    let students = await getAllStudents(offset);
+    let students = await getAllStudents(offset, req);
     res.render("student/student-list", {totalPageData: totalPage, totalStudent, students});
 }
 
@@ -72,21 +72,89 @@ function updateStudent(data, value){
     });
 }
 
-function getAllStudents(offsetData){
+function countStudent(formData){
+
+    let name= formData.query.name;
+    let className = formData.query.className;
+    let father = formData.query.fname;
+    let mother = formData.query.mname;
+
+    let condition = "1"; /* if I dont define as "1", i
+                          *t will take "undefine" as default value which will show error in MYSQL
+                          */  
+    if (name) {
+        condition += ` AND name LIKE "%${name}%"`;
+    }
+    if(className){
+        condition += ` AND className LIKE "%${className}%"`;
+    }
+    if(father){
+        condition += ` AND fatherName LIKE "%${father}%"`;
+    }
+    if(mother) {
+        condition += ` AND motherName LIKE "%${mother}%"`;
+    }
+
+
+    return new Promise ((resolve, reject) =>{
+        let qu = `SELECT COUNT(*) AS totalStudent
+        FROM student AS s
+        LEFT JOIN class AS c ON c.id = s.classId
+        WHERE ${condition}`;
+        console.log(qu);
+        con.query(qu, (err, result) =>{
+            if(err){
+                reject(err);
+            }
+            // totalStudent came from query alias
+            if (result == 0) {
+                resolve(result);
+            } else {
+                resolve(result[0].totalStudent);
+            }
+        });
+    });
+}
+
+function getAllStudents(offsetData, formData){
+    let name= formData.query.name;
+    let className = formData.query.className;
+    let father = formData.query.fname;
+    let mother = formData.query.mname;
+    let condition = "1"; /* if I dont define as "1", i
+                          *t will take "undefine" as default value which will show error in MYSQL
+                          */  
+    if (name) {
+        condition += ` AND name LIKE "%${name}%"`;
+    }
+    if(className) {
+        condition += ` AND className LIKE "%${className}%"`;
+    }
+    if(father){
+        condition += ` AND fatherName LIKE "%${father}%"`;
+    }
+    if(mother){
+        condition += ` AND motherName LIKE "%${mother}%"`;
+    }
     return new Promise((resolve, reject) => {
-    con.query(`SELECT 
-                    s.id,
-                    s.name, 
-                    c.className,
-                    s.gender,
-                    s.fatherName,
-                    s.motherName, 
-                    s.fatherMobile,
-                    s.motherMobile,
-                    s.address,
-                    s.note
-                FROM student AS s
-                LEFT JOIN class AS c ON c.id = s.classId LIMIT ${recPerPage} OFFSET ${offsetData} `, (err, result) => {
+    let qu = `SELECT 
+                s.id,
+                s.name, 
+                c.className,
+                s.gender,
+                s.fatherName,
+                s.motherName, 
+                s.fatherMobile,
+                s.motherMobile,
+                s.address,
+                s.note
+            FROM student AS s
+            LEFT JOIN class AS c ON c.id = s.classId
+            WHERE ${condition}
+            LIMIT ${recPerPage} OFFSET ${offsetData} `;
+    console.log("===========================>");
+    console.log(qu);
+    con.query(qu, (err, result) => {
                 if(err){
                     reject(err);
                 }
@@ -109,17 +177,7 @@ function getClasses()
 }
 
 // For pagination use
-function countStudent(){
-    return new Promise ((resolve, reject) =>{
-        con.query("SELECT COUNT(*) AS totalStudent FROM student", (err, result) =>{
-            if(err){
-                reject(err);
-            }
-            // totalStudent came from query alias
-            resolve(result[0].totalStudent);
-        });
-    });
-}
+
 
 module.exports.viewStudentById = (req, res) => {
     con.query(`SELECT 

@@ -12,43 +12,84 @@ module.exports.insertStaff = (req, res) => {
         }
             res.redirect("/stafflist");
     });
-}
+} 
  
 module.exports.staffList = async(req, res) => {
-    try {
+    try { 
         let page = req.query.page || 1;
-        let allStaff = await countAllStaff();
+        let allStaff = await countAllStaff(req);
         let offset = (recPerPage * page) - recPerPage;
-        let staffs = await getStaff(offset);
+        let staffs = await getStaff(offset, req);
         let totalPage = Math.ceil(allStaff/recPerPage);
         res.render("staff/list-staff", {allStaffData: allStaff, staffData: staffs, pageNo: page, totalPages: totalPage});
     } catch (error) {
         console.log(error);
     }
 }
-function getStaff(offset){
+function getStaff(offset, formData){
+    
+    let fullName= formData.query.name;
+    let designation = formData.query.designation;
+    let mobile = formData.query.mobile;
+    let condition = "1";
+
+    if(fullName) {
+        condition += ` AND fullName LIKE "%${fullName}%"`;
+    }
+    if (designation) {
+        condition += ` AND designation LIKE "%${designation}%"`;
+    }
+    if(mobile){
+        condition += ` AND mobile LIKE "%${mobile}%"`;
+    }
+
     return new Promise((resolve, reject) => {
-        con.query(`SELECT
-                        s.id,
-                        s.fullName,
-                        s.designation,
-                        s.mobile,
-                        s.address,
-                        s.joiningDate,
-                        s.salary
-                    FROM staff AS s
-                    LIMIT ${recPerPage} OFFSET ${offset}`, function (err, result) {
-                        if(err){
-                            reject(err);
-                        }               
-                        resolve(result);         
-                    });
+        let staffQuery = `SELECT
+                            s.id,
+                            s.fullName,
+                            s.designation,
+                            s.mobile,
+                            s.address,
+                            s.joiningDate,
+                            s.salary
+                        FROM staff AS s
+                        WHERE ${condition}
+                        LIMIT ${recPerPage} OFFSET ${offset}`;
+            console.log("========?>");
+            console.log(staffQuery); 
+            con.query(staffQuery, function (err, result) {
+            if(err){
+                reject(err);
+            }               
+            resolve(result);         
+        });
     });
 }
 
-function countAllStaff(){
+function countAllStaff(formData){
+
+    let fullName= formData.query.name;
+    let designation = formData.query.designation;
+    let mobile = formData.query.mobile;
+    let condition = "1";
+
+    if(fullName) {
+        condition += ` AND fullName LIKE "%${fullName}%"`;
+    }
+    if (designation) {
+        condition += ` AND designation LIKE "%${designation}%"`;
+    }
+    if(mobile){
+        condition += ` AND mobile LIKE "%${mobile}%"`;
+    }
+
     return new Promise((resolve, reject) => {
-        con.query("SELECT COUNT(*) AS totalStaff FROM staff", (err, staffCount) => {
+        let staffQuery = `SELECT COUNT(*) AS totalStaff 
+                                FROM staff
+                                WHERE ${condition}`;
+        console.log("========?>");
+        console.log(staffQuery);                        
+        con.query(staffQuery, (err, staffCount) => {
             if(err){
                 reject(err);
             }
